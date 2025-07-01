@@ -8,23 +8,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import AppSkeleton from '../components/AppSkeleton';
-import {moderateScale, scale, verticalScale} from '../utils/helper';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import {fonts} from '../assets/fonts/Fonts';
-import {orderCard} from '../assets/dummyData/dummyData';
-import {useNavigation} from '@react-navigation/native';
+import { fonts } from '../assets/fonts/Fonts';
+import { orderCard } from '../assets/dummyData/dummyData';
+import { useNavigation } from '@react-navigation/native';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const TAB_WIDTH = (width * 0.916) / 2;
 
-const HistoryTab = ({onPress, item}) => {
+const HistoryTab = ({ onPress, item }) => {
   // const { selected } = useSelector(state => state?.language);
   const navigation = useNavigation();
   return (
     <>
-      <TouchableOpacity style={[styles.card]} onPress={()=>navigation?.navigate("OrderDetails")}>
+      <TouchableOpacity style={[styles.card]} onPress={() => navigation?.navigate("OrderDetails", { orderData: item })}>
         <Text style={styles?.order}>
           Order No# <Text style={styles?.orderNumber}>{item?.orderNumber}</Text>
         </Text>
@@ -38,7 +38,7 @@ const HistoryTab = ({onPress, item}) => {
           Type: <Text style={styles?.type}>{item?.type}</Text>
         </Text>
         <Text
-          onPress={() => navigation?.navigate('MapScreen')}
+          onPress={() => navigation?.navigate('MapScreen', { orderData: item })}
           style={styles?.map}>
           View Map
         </Text>
@@ -70,8 +70,8 @@ const Order = () => {
               data={orderCard}
               showsVerticalScrollIndicator={false}
               keyExtractor={item => item?._id}
-              style={{padding: verticalScale(1), marginTop: verticalScale(10)}}
-              renderItem={({item, index}) => <HistoryTab item={item} />}
+              style={{ padding: verticalScale(1), marginTop: verticalScale(10) }}
+              renderItem={({ item, index }) => <HistoryTab item={item} />}
               contentContainerStyle={{
                 paddingBottom: verticalScale(45),
                 gap: verticalScale(20),
@@ -87,8 +87,8 @@ const Order = () => {
               data={orderCard.slice(0, 4)}
               showsVerticalScrollIndicator={false}
               keyExtractor={item => item?._id}
-              style={{padding: verticalScale(1), marginTop: verticalScale(10)}}
-              renderItem={({item, index}) => <HistoryTab item={item} />}
+              style={{ padding: verticalScale(1), marginTop: verticalScale(10) }}
+              renderItem={({ item, index }) => <HistoryTab item={item} />}
               contentContainerStyle={{
                 paddingBottom: verticalScale(45),
                 gap: verticalScale(20),
@@ -118,7 +118,7 @@ const Order = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <Animated.View style={[styles?.indicator, {transform: [{translateX}]}]} />
+      <Animated.View style={[styles?.indicator, { transform: [{ translateX }] }]} />
       <View style={styles?.tabContainer}>{renderContent()}</View>
       {/* </View> */}
     </AppSkeleton>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: scale(4),
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     borderLeftColor: Colors?.orange,

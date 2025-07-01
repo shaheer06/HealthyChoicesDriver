@@ -10,7 +10,7 @@ import {
   GOOGLE_MAPS_API_KEY,
 } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import { useOrderRequest } from '../context/OrderRequestContext';
+
 
 const Map = forwardRef((props, ref) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -18,7 +18,7 @@ const Map = forwardRef((props, ref) => {
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
-  const { orderData } = useOrderRequest();
+  const { orderData } = props;
 
   const checkPermission = async () => {
     const granted = await requestLocationPermission();
@@ -40,8 +40,8 @@ const Map = forwardRef((props, ref) => {
         setIsLoadingLocation(false);
 
         // Get route if order data exists
-        if (orderData && orderData.location) {
-          getRouteFromGoogleDirections(latitude, longitude, orderData.location.latitude, orderData.location.longitude);
+        if (orderData && orderData.lat && orderData.lng) {
+          getRouteFromGoogleDirections(latitude, longitude, orderData.lat, orderData.lng);
         }
       },
       (error) => {
@@ -170,12 +170,12 @@ const Map = forwardRef((props, ref) => {
   }, [hasPermission]);
 
   useEffect(() => {
-    if (orderData && orderData.location && driverLocation) {
+    if (orderData && orderData.lat && orderData.lng && driverLocation) {
       getRouteFromGoogleDirections(
         driverLocation.latitude,
         driverLocation.longitude,
-        orderData.location.latitude,
-        orderData.location.longitude
+        orderData.lat,
+        orderData.lng
       );
     }
   }, [orderData, driverLocation]);
@@ -247,11 +247,11 @@ const Map = forwardRef((props, ref) => {
           />
         )}
 
-        {orderData && orderData.location && (
+        {orderData && orderData.lat && orderData.lng && (
           <Marker
-            coordinate={orderData.location}
+            coordinate={{ latitude: orderData.lat, longitude: orderData.lng }}
             title="Customer Location"
-            description={orderData.customerAddress}
+            description={orderData.location}
             pinColor="red"
           />
         )}

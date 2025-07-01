@@ -1,21 +1,23 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useRef } from 'react'
 import Map from '../components/Map'
 import Icon from '../assets/icon/Icon'
 import { scale, verticalScale } from '../utils/helper'
 import Colors from '../assets/colors/Color'
 import { useNavigation } from '@react-navigation/native'
 
-const MapScreen = () => {
-    const navigation=useNavigation();
+const MapScreen = ({ route }) => {
+  const navigation = useNavigation();
+  const mapRef = useRef(null);
+  const { orderData } = route?.params;
   return (
     <View>
-      <Map/>
+      <Map ref={mapRef} orderData={orderData} />
       <View style={styles?.btn} >
         <Icon
-        family={"Ionicons"}
-        name={"return-up-back"}
-        onPress={()=>navigation?.goBack()}
+          family={"Ionicons"}
+          name={"return-up-back"}
+          onPress={() => navigation?.goBack()}
         />
       </View>
     </View>
@@ -25,13 +27,13 @@ const MapScreen = () => {
 export default MapScreen
 
 const styles = StyleSheet.create({
-    btn:{
-        position:"absolute",
-        top:verticalScale(50),
-        backgroundColor:Colors?.white,
-        padding:scale(10),
-        borderRadius:scale(5),
-        left:scale(15)
+  btn: {
+    position: "absolute",
+    top: verticalScale(50),
+    backgroundColor: Colors?.white,
+    padding: scale(10),
+    borderRadius: scale(5),
+    left: scale(15)
 
-    }
+  }
 })

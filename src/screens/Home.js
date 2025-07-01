@@ -8,11 +8,12 @@ import Colors from '../assets/colors/Color';
 import { scale, verticalScale } from '../utils/helper';
 import { fonts } from '../assets/fonts/Fonts';
 import Header from '../components/BacKHeader';
+import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
   const { setOrderData } = useOrderRequest();
   const mapRef = useRef(null);
-
+  const navigation = useNavigation();
   const simulateIncomingRequest = () => {
     setOrderData({
       customerName: 'John Doe',
@@ -103,7 +104,9 @@ const Home = () => {
             subtitle="Active deliveries"
             icon="🚚"
             color={Colors.orange}
-            onPress={() => console.log('Current Order pressed')}
+            onPress={() => navigation.navigate('BottomTabs', {
+              screen: 'Order'
+            })}
           />
         </View>
 
