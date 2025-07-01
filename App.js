@@ -32,19 +32,7 @@ export default function App() {
             <Stack.Screen name="BottomTabs" component={BottomTabs} />
           </Stack.Navigator>
         </NavigationContainer>
-
-        {/* ✅ This is now INSIDE the provider and safe */}
-        <OrderRequestModal
-          onAccept={(orderData) => {
-            if (navRef.isReady()) {
-              navRef.navigate('BottomTabs', {
-                screen: 'Home',
-                params: { orderData },
-              });
-            }
-          }}
-        />
       </SafeAreaProvider>
-     </OrderRequestProvider>
+    </OrderRequestProvider>
   );
 }

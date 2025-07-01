@@ -1,8 +1,8 @@
-import {StatusBar, StyleSheet, Text, View} from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import Colors from '../assets/colors/Color';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {scale, verticalScale} from '../utils/helper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { scale, verticalScale } from '../utils/helper';
 
 const AppSkeleton = ({
   children,
@@ -11,14 +11,14 @@ const AppSkeleton = ({
 }) => {
   const insets = useSafeAreaInsets();
   return (
-    <View style={{flex: 1, backgroundColor: Colors.white}}>
+    <View style={{ flex: 1, backgroundColor: Colors.white }}>
       <StatusBar
         barStyle={statusBarContent}
         backgroundColor={statusBarColor}
         translucent={false}
       />
 
-      <View style={{height: insets.top, backgroundColor: statusBarColor}} />
+      <View style={{ height: insets.top, backgroundColor: statusBarColor }} />
 
       <View style={styles.container}>{children}</View>
     </View>
