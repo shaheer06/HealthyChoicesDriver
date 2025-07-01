@@ -17,11 +17,7 @@ const OrderDetails = () => {
             <Text style={styles?.orderNumber} >HC-1001</Text>
         </Text>
         <View>
-            <Icon
-            name={"user"}
-            family={"Entypo"}
-            color={Colors?.orange}
-            />
+            <Text>👤 Customer: Shaheer</Text>
         </View>
       </View>
     </AppSkeleton>
