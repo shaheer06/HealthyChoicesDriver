@@ -9,7 +9,6 @@ import LoginScreen from './src/screens/LoginScreen';
 import SplashScreen from './src/screens/SplashScreen';
 import BottomTabs from './src/navigation/BottomTabs';
 import { OrderRequestProvider } from './src/context/OrderRequestContext';
-import OrderRequestModal from './src/components/OrderRequestModal';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,19 +27,7 @@ export default function App() {
             <Stack.Screen name="BottomTabs" component={BottomTabs} />
           </Stack.Navigator>
         </NavigationContainer>
-
-        {/* ✅ This is now INSIDE the provider and safe */}
-        <OrderRequestModal
-          onAccept={(orderData) => {
-            if (navRef.isReady()) {
-              navRef.navigate('BottomTabs', {
-                screen: 'Home',
-                params: { orderData },
-              });
-            }
-          }}
-        />
       </SafeAreaProvider>
-     </OrderRequestProvider>
+    </OrderRequestProvider>
   );
 }
