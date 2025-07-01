@@ -1,15 +1,15 @@
 import { createContext, useContext, useState } from "react";
 
-const orderRequestContext=createContext();
+const OrderRequestContext=createContext();
 
-export const useOrderRequest=()=>useContext(orderRequestContext);
+export const useOrderRequest=()=>useContext(OrderRequestContext);
 
 export const OrderRequestProvider=({children})=>{
 const [orderData,setOrderData]=useState(null);
 
 return(
-    <OrderRequestProvider value={{orderData,setOrderData}}>
+    <OrderRequestContext.Provider value={{orderData,setOrderData}}>
         {children}
-    </OrderRequestProvider>
+    </OrderRequestContext.Provider>
 )
 }
