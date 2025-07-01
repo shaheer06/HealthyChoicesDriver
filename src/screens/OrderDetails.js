@@ -8,34 +8,41 @@ import {
   Alert,
   FlatList,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 
 import LocationModal from '../components/LocationModal';
 import OrderSection from '../components/OrderSection';
-import { moderateScale, scale, verticalScale } from '../utils/helper';
+import {moderateScale, scale, verticalScale} from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import { fonts } from '../assets/fonts/Fonts';
+import {fonts} from '../assets/fonts/Fonts';
 import Icon from '../assets/icon/Icon';
 import ImagePickerModal from '../components/ImagePickerModal';
+import Header from '../components/BacKHeader';
+import CustomButton from '../components/CustomButton';
 
-const OrderDetails = ({ route }) => {
-  const { orderData } = route?.params || {};
+const OrderDetails = ({route}) => {
+  const {orderData} = route?.params || {};
   const [deliveryStatus, setDeliveryStatus] = useState('pending');
   const [showImageModal, setShowImageModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
 
   const handleConfirmOrder = () => {
-    Alert.alert('Confirm Order', 'Are you sure you want to confirm this order for delivery?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Confirm', onPress: () => {
-          setDeliveryStatus('confirmed');
-          Alert.alert('Success', 'Order confirmed for delivery!');
-        }
-      },
-    ]);
+    Alert.alert(
+      'Confirm Order',
+      'Are you sure you want to confirm this order for delivery?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Confirm',
+          onPress: () => {
+            setDeliveryStatus('confirmed');
+            Alert.alert('Success', 'Order confirmed for delivery!');
+          },
+        },
+      ],
+    );
   };
 
   const handleStartDelivery = () => {
@@ -44,18 +51,23 @@ const OrderDetails = ({ route }) => {
   };
 
   const handleCompleteDelivery = () => {
-    Alert.alert('Complete Delivery', 'Are you sure you want to mark this delivery as completed?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Complete', onPress: () => {
-          setDeliveryStatus('delivered');
-          Alert.alert('Success', 'Delivery completed successfully!');
-        }
-      },
-    ]);
+    Alert.alert(
+      'Complete Delivery',
+      'Are you sure you want to mark this delivery as completed?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Complete',
+          onPress: () => {
+            setDeliveryStatus('delivered');
+            Alert.alert('Success', 'Delivery completed successfully!');
+          },
+        },
+      ],
+    );
   };
 
-  const addImage = (imageAsset) => {
+  const addImage = imageAsset => {
     if (uploadedImages.length < 3) {
       if (imageAsset?.uri) {
         setUploadedImages([...uploadedImages, imageAsset.uri]);
@@ -68,24 +80,20 @@ const OrderDetails = ({ route }) => {
     }
   };
 
-  const removeImage = (index) => {
-    Alert.alert(
-      'Remove Image',
-      'Are you sure you want to remove this image?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () => {
-            setUploadedImages(uploadedImages.filter((_, i) => i !== index));
-          },
+  const removeImage = index => {
+    Alert.alert('Remove Image', 'Are you sure you want to remove this image?', [
+      {text: 'Cancel', style: 'cancel'},
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: () => {
+          setUploadedImages(uploadedImages.filter((_, i) => i !== index));
         },
-      ]
-    );
+      },
+    ]);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     const colors = {
       pending: Colors.orange,
       confirmed: Colors.verify,
@@ -95,7 +103,7 @@ const OrderDetails = ({ route }) => {
     return colors[status] || Colors.grey;
   };
 
-  const getStatusText = (status) => {
+  const getStatusText = status => {
     const texts = {
       pending: 'Pending',
       confirmed: 'Confirmed',
@@ -105,7 +113,7 @@ const OrderDetails = ({ route }) => {
     return texts[status] || 'Unknown';
   };
 
-  const renderOrderItem = ({ item }) => (
+  const renderOrderItem = ({item}) => (
     <View style={styles.orderItem}>
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
@@ -115,14 +123,16 @@ const OrderDetails = ({ route }) => {
     </View>
   );
 
-  const renderUploadedImage = ({ item, index }) => (
+  const renderUploadedImage = ({item, index}) => (
     <View style={styles.imageContainer}>
       <Image
-        source={{ uri: item }}
+        source={{uri: item}}
         style={styles.uploadedImage}
         resizeMode="cover"
       />
-      <TouchableOpacity style={styles.removeImageButton} onPress={() => removeImage(index)}>
+      <TouchableOpacity
+        style={styles.removeImageButton}
+        onPress={() => removeImage(index)}>
         <Icon family="AntDesign" name="close" size={16} color={Colors.white} />
       </TouchableOpacity>
     </View>
@@ -140,12 +150,19 @@ const OrderDetails = ({ route }) => {
 
   return (
     <AppSkeleton>
+      <Header />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.orderDetails}>Order Details</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(deliveryStatus) }]}>
-            <Text style={styles.statusText}>{getStatusText(deliveryStatus)}</Text>
+          <View
+            style={[
+              styles.statusBadge,
+              {backgroundColor: getStatusColor(deliveryStatus)},
+            ]}>
+            <Text style={styles.statusText}>
+              {getStatusText(deliveryStatus)}
+            </Text>
           </View>
         </View>
 
@@ -156,7 +173,10 @@ const OrderDetails = ({ route }) => {
         </View>
 
         {/* Customer Information */}
-        <OrderSection icon="user" title="Customer Information" style={styles.customerInfo}>
+        <OrderSection
+          icon="user"
+          title="Customer Information"
+          style={styles.customerInfo}>
           <View style={styles.customerInfo}>
             <Text style={styles.customerName}>{orderData.name}</Text>
             <Text style={styles.customerPhone}>{orderData.phone}</Text>
@@ -169,8 +189,7 @@ const OrderDetails = ({ route }) => {
           icon="location-arrow"
           title="Delivery Location"
           showMapIcon={true}
-          onMapPress={() => setShowLocationModal(true)}
-        >
+          onMapPress={() => setShowLocationModal(true)}>
           <Text style={styles.locationText}>{orderData.location}</Text>
         </OrderSection>
 
@@ -207,7 +226,9 @@ const OrderDetails = ({ route }) => {
         {/* Special Instructions */}
         {orderData.specialInstructions && (
           <OrderSection icon="info-circle" title="Special Instructions">
-            <Text style={styles.instructionsText}>{orderData.specialInstructions}</Text>
+            <Text style={styles.instructionsText}>
+              {orderData.specialInstructions}
+            </Text>
           </OrderSection>
         )}
 
@@ -215,7 +236,8 @@ const OrderDetails = ({ route }) => {
         {deliveryStatus === 'inProgress' && (
           <OrderSection icon="camera" title="Delivery Photos">
             <Text style={styles.uploadText}>
-              Upload photos of pickup/delivery ({uploadedImages.length}/3 images)
+              Upload photos of pickup/delivery ({uploadedImages.length}/3
+              images)
             </Text>
             {uploadedImages.length > 0 && (
               <FlatList
@@ -228,8 +250,15 @@ const OrderDetails = ({ route }) => {
               />
             )}
             {uploadedImages.length < 3 && (
-              <TouchableOpacity style={styles.uploadButton} onPress={() => setShowImageModal(true)}>
-                <Icon family="FontAwesome" name="plus" size={20} color={Colors.white} />
+              <TouchableOpacity
+                style={styles.uploadButton}
+                onPress={() => setShowImageModal(true)}>
+                <Icon
+                  family="FontAwesome"
+                  name="plus"
+                  size={20}
+                  color={Colors.white}
+                />
                 <Text style={styles.uploadButtonText}>Add Photo</Text>
               </TouchableOpacity>
             )}
@@ -239,24 +268,39 @@ const OrderDetails = ({ route }) => {
           </OrderSection>
         )}
 
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          {deliveryStatus === 'pending' && (
-            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmOrder}>
-              <Text style={styles.buttonText}>Confirm Order</Text>
-            </TouchableOpacity>
-          )}
-          {deliveryStatus === 'confirmed' && (
-            <TouchableOpacity style={styles.startButton} onPress={handleStartDelivery}>
-              <Text style={styles.buttonText}>Start Delivery</Text>
-            </TouchableOpacity>
-          )}
-          {deliveryStatus === 'inProgress' && (
-            <TouchableOpacity style={styles.completeButton} onPress={handleCompleteDelivery}>
-              <Text style={styles.buttonText}>Complete Delivery</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+        <CustomButton
+          onPress={
+            deliveryStatus === 'pending'
+              ? handleConfirmOrder
+              : deliveryStatus === 'confirmed'
+              ? handleStartDelivery
+              : deliveryStatus === 'inProgress'
+              ? handleCompleteDelivery
+              : () => {}
+          }
+          label={
+            deliveryStatus === 'pending'
+              ? 'Confirm Order'
+              : deliveryStatus === 'confirmed'
+              ? 'Start Delivery'
+              : deliveryStatus === 'inProgress'
+              ? 'Complete Delivery'
+              : null
+          }
+          btnStyle={{
+            width: '95%',
+            borderRadius: scale(5),
+            backgroundColor:
+              deliveryStatus === 'pending'
+                ? Colors?.verify
+                : deliveryStatus === 'confirmed'
+                ? Colors?.btnColor
+                : deliveryStatus === 'inProgress'
+                ? Colors?.green
+                : Colors?.gray,
+            alignSelf: 'center',
+          }}
+        />
       </ScrollView>
 
       <ImagePickerModal
@@ -269,7 +313,7 @@ const OrderDetails = ({ route }) => {
         visible={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         location={orderData.location}
-        coordinates={{ lat: orderData.lat, lng: orderData.lng }}
+        coordinates={{lat: orderData.lat, lng: orderData.lng}}
       />
     </AppSkeleton>
   );
@@ -278,7 +322,7 @@ const OrderDetails = ({ route }) => {
 export default OrderDetails;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.white },
+  container: {flex: 1, backgroundColor: Colors.white},
   header: {
     backgroundColor: Colors.white,
     width: '100%',
@@ -329,7 +373,7 @@ const styles = StyleSheet.create({
     color: Colors.orange,
     marginLeft: scale(5),
   },
-  customerInfo: { marginTop: verticalScale(5) },
+  customerInfo: {marginTop: verticalScale(5)},
   customerName: {
     fontSize: moderateScale(16),
     fontFamily: fonts.bold,
@@ -362,7 +406,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.greyV4,
   },
-  itemInfo: { flex: 1 },
+  itemInfo: {flex: 1},
   itemName: {
     fontSize: moderateScale(14),
     fontFamily: fonts.medium,
@@ -441,9 +485,9 @@ const styles = StyleSheet.create({
     color: Colors.grey,
     marginBottom: verticalScale(10),
   },
-  imagesList: { marginBottom: verticalScale(10) },
-  imageContainer: { marginRight: scale(10), position: 'relative' },
-  uploadedImage: { width: scale(80), height: scale(80), borderRadius: scale(8) },
+  imagesList: {marginBottom: verticalScale(10)},
+  imageContainer: {marginRight: scale(10), position: 'relative'},
+  uploadedImage: {width: scale(80), height: scale(80), borderRadius: scale(8)},
   removeImageButton: {
     position: 'absolute',
     top: 0,
