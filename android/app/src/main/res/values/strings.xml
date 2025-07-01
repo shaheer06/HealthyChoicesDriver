@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HealthyChoicesDriver</string>
+    <string name="google_maps_api_key">AIzaSyD_qcFdAqDGDG6oD2VzJqd8g4sAKMq6iBY</string>
 </resources>
