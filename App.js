@@ -12,6 +12,11 @@ import { OrderRequestProvider } from './src/context/OrderRequestContext';
 import OrderRequestModal from './src/components/OrderRequestModal';
 import MapScreen from './src/screens/MapScreen';
 import OrderDetails from './src/screens/OrderDetails';
+import ActivityLog from './src/screens/ActivityLog';
+import OrderHistory from './src/screens/OrderHistory';
+import ProfileDetail from './src/screens/ProfileDetail';
+import Notification from './src/screens/Notification';
+import ChangeNumber from './src/screens/ChangeNumber';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +34,11 @@ export default function App() {
             <Stack.Screen name="SplashScreen" component={SplashScreen} />
             <Stack.Screen name="MapScreen" component={MapScreen} />
             <Stack.Screen name="OrderDetails" component={OrderDetails} />
+            <Stack.Screen name="ActivityLog" component={ActivityLog} />
+            <Stack.Screen name="OrderHistory" component={OrderHistory} />
+            <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
+            <Stack.Screen name="Notification" component={Notification} />
+            <Stack.Screen name="ChangeNumber" component={ChangeNumber} />
             <Stack.Screen name="BottomTabs" component={BottomTabs} />
           </Stack.Navigator>
         </NavigationContainer>

@@ -65,7 +65,7 @@ const Home = () => {
         borderBottomRightRadius: scale(15)
       }}>
 
-        <Header text={'Dashboard'} showText={true} iconColor={Colors?.white} color={Colors?.white} />
+        <Header text={'Dashboard'} showText={true} iconColor={Colors?.white} color={Colors?.white} type={3} />
 
         <View style={styles.headerImageContainer}>
           <Image

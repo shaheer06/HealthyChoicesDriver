@@ -28,6 +28,7 @@ const OrderDetails = ({route}) => {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
 
+
   const handleConfirmOrder = () => {
     Alert.alert(
       'Confirm Order',
@@ -147,6 +148,8 @@ const OrderDetails = ({route}) => {
       </AppSkeleton>
     );
   }
+
+ 
 
   return (
     <AppSkeleton>

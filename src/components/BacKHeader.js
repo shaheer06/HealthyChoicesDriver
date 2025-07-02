@@ -112,9 +112,9 @@ const Header = ({
   if (type === 3) {
     return (
       <View style={[styles.container2, styleContainer]}>
-        {renderBackArrow()}
+        {/* {renderBackArrow()} */}
         <Text style={[styles?.text, text3]}>{text}</Text>
-        {renderHamburger()}
+        {/* {renderHamburger()} */}
       </View>
     );
   }
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: verticalScale(10),
     alignItems: 'center',
+    justifyContent:"center"
   },
   iconWrapper: {
     zIndex: 100,
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: moderateScale(14),
-    color: Colors?.black,
+    color: Colors?.white,
     fontFamily: fonts?.bold,
     textAlign: 'center',
   },

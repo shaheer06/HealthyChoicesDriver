@@ -176,3 +176,247 @@ export const orderCard = [
     specialInstructions: "Handle with care. Fragile items.",
   }
 ];
+
+
+
+export const profileArray  = [
+  {
+    _id: '_1',
+    title: "🧑 Your Profile",
+    routName:"ProfileDetail"
+ 
+  },
+  {
+    _id: '2',
+    title: "🔔 Activity Log",
+    routName:"ActivityLog"
+  
+  },
+  {
+    _id: '3',
+    title: "💳 Order History'",
+    routName:"OrderHistory"
+   
+  },
+  
+  {
+    _id:"4",
+    title:"🔔 Notifications",
+    routName:"Notification"
+
+  },
+ 
+  
+];
+
+
+export const mealData = [
+  {
+    _id: "1",
+    name: "Azhar",
+    meal: "Meal Delivered",
+    dish: "Chicken Bowl was delivered to the customer",
+    date: "2025-07-02T09:36:00.000Z",
+  },
+  {
+    _id: "2",
+    name: "Fatima",
+    meal: "Meal Pending",
+    dish: "Beef Wrap is being prepared in the kitchen",
+    date: "2025-07-01T14:20:00.000Z",
+  },
+  {
+    _id: "3",
+    name: "Ali",
+    meal: "Meal Cancelled",
+    dish: "Veggie Pasta order was cancelled by the customer",
+    date: "2025-06-30T11:15:00.000Z",
+  },
+  {
+    _id: "4",
+    name: "Sara",
+    meal: "Meal Delivered",
+    dish: "Grilled Salmon was delivered to the customer",
+    date: "2025-06-29T17:00:00.000Z",
+  },
+  {
+    _id: "5",
+    name: "Usman",
+    meal: "Meal Preparing",
+    dish: "Mutton Biryani is being cooked",
+    date: "2025-06-28T08:45:00.000Z",
+  },
+  {
+    _id: "6",
+    name: "Hira",
+    meal: "Meal Delivered",
+    dish: "Paneer Tikka was delivered to the customer",
+    date: "2025-06-27T19:10:00.000Z",
+  },
+  {
+    _id: "7",
+    name: "Zain",
+    meal: "Meal Delivered",
+    dish: "Spaghetti Carbonara was delivered to the customer",
+    date: "2025-06-26T12:30:00.000Z",
+  },
+  {
+    _id: "8",
+    name: "Nida",
+    meal: "Meal Preparing",
+    dish: "Chicken Caesar Salad is being assembled",
+    date: "2025-06-25T15:25:00.000Z",
+  },
+  {
+    _id: "9",
+    name: "Kashif",
+    meal: "Meal Cancelled",
+    dish: "Lamb Chops order was cancelled by the kitchen",
+    date: "2025-06-24T10:00:00.000Z",
+  },
+  {
+    _id: "10",
+    name: "Ayesha",
+    meal: "Meal Delivered",
+    dish: "Tandoori Chicken was delivered to the customer",
+    date: "2025-06-23T20:05:00.000Z",
+  },
+];
+
+
+export const orderHistory = [
+  {
+    _id: "1",
+    orderId: "ORD-1001",
+    customerName: "Azhar Khan",
+    status: "Delivered",
+    items: [
+      { name: "Chicken Biryani", quantity: 1 },
+      { name: "Raita", quantity: 1 },
+    ],
+    totalAmount: 8.99,
+    paymentMethod: "Credit Card",
+    date: "2025-07-02T09:36:00.000Z",
+    location: "Manama, Bahrain",
+  },
+  {
+    _id: "2",
+    orderId: "ORD-1002",
+    customerName: "Fatima Zahra",
+    status: "Cancelled",
+    items: [
+      { name: "Beef Burger", quantity: 2 },
+      { name: "Fries", quantity: 1 },
+    ],
+    totalAmount: 12.5,
+    paymentMethod: "Cash on Delivery",
+    date: "2025-06-30T17:15:00.000Z",
+    location: "Riffa, Bahrain",
+  },
+  {
+    _id: "3",
+    orderId: "ORD-1003",
+    customerName: "Ali Raza",
+    status: "Returned",
+    items: [
+      { name: "Veggie Pizza", quantity: 1 },
+      { name: "Garlic Bread", quantity: 1 },
+    ],
+    totalAmount: 10.25,
+    paymentMethod: "Apple Pay",
+    date: "2025-07-01T12:00:00.000Z",
+    location: "Muharraq, Bahrain",
+  },
+  {
+    _id: "4",
+    orderId: "ORD-1004",
+    customerName: "Sara Malik",
+    status: "Delivered",
+    items: [
+      { name: "Paneer Tikka", quantity: 1 },
+      { name: "Mango Lassi", quantity: 2 },
+    ],
+    totalAmount: 11.75,
+    paymentMethod: "Credit Card",
+    date: "2025-06-29T20:45:00.000Z",
+    location: "Isa Town, Bahrain",
+  },
+  {
+    _id: "5",
+    orderId: "ORD-1005",
+    customerName: "Usman Bashir",
+    status: "Delivered",
+    items: [
+      { name: "Tandoori Chicken", quantity: 1 },
+      { name: "Naan", quantity: 2 },
+    ],
+    totalAmount: 14.0,
+    paymentMethod: "Debit Card",
+    date: "2025-07-02T11:20:00.000Z",
+    location: "Budaiya, Bahrain",
+  },
+];
+
+
+
+
+export const notifications = [
+  {
+    _id: '1',
+    image: 'https://randomuser.me/api/portraits/men/1.jpg',
+    message: 'Order #1234 was delivered successfully.',
+    date: '2025-07-02T16:30:00Z',
+    type: 'delivered',
+  },
+  {
+    _id: '2',
+    image: 'https://randomuser.me/api/portraits/women/2.jpg',
+    message: 'Order #1235 has been cancelled by the user.',
+    date: '2025-05-01T13:15:00Z',
+    type: 'cancelled',
+  },
+  {
+    _id: '3',
+    image: 'https://randomuser.me/api/portraits/men/3.jpg',
+    message: 'You received a new order #1236.',
+    date: '2025-07-01T12:45:00Z',
+    type: 'new',
+  },
+  {
+    _id: '4',
+    image: 'https://randomuser.me/api/portraits/women/4.jpg',
+    message: 'Order #1237 has been picked up.',
+    date: '2025-07-01T13:20:00Z',
+    type: 'picked',
+  },
+  {
+    _id: '1',
+    image: 'https://randomuser.me/api/portraits/men/1.jpg',
+    message: 'Order #1234 was delivered successfully.',
+    date: '2025-07-02T16:30:00Z',
+    type: 'delivered',
+  },
+  {
+    _id: '2',
+    image: 'https://randomuser.me/api/portraits/women/2.jpg',
+    message: 'Order #1235 has been cancelled by the user.',
+    date: '2025-05-01T13:15:00Z',
+    type: 'cancelled',
+  },
+  {
+    _id: '3',
+    image: 'https://randomuser.me/api/portraits/men/3.jpg',
+    message: 'You received a new order #1236.',
+    date: '2025-07-01T12:45:00Z',
+    type: 'new',
+  },
+  {
+    _id: '4',
+    image: 'https://randomuser.me/api/portraits/women/4.jpg',
+    message: 'Order #1237 has been picked up.',
+    date: '2025-07-01T13:20:00Z',
+    type: 'picked',
+  },
+];
+
+

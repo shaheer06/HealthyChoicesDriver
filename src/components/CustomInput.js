@@ -30,6 +30,7 @@ const CustomInput = ({
   focusColor = Colors?.orange,
   placeholderTextColor=Colors.lightGrey,
   minimumDate,
+  editable
 }) => {
   // const initialDate = value ? new Date(value) : new Date();
   // const [date, setDate] = useState(new Date());
@@ -111,7 +112,7 @@ const CustomInput = ({
             placeholderTextColor={placeholderTextColor}
             value={value}
             onChangeText={onChangeText}
-            editable={!disabled}
+            editable={!disabled && editable}
             secureTextEntry={secureTextEntry && !showPassword}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
