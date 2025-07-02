@@ -17,7 +17,7 @@ import OrderHistory from './src/screens/OrderHistory';
 import ProfileDetail from './src/screens/ProfileDetail';
 import Notification from './src/screens/Notification';
 import ChangeNumber from './src/screens/ChangeNumber';
-
+import Chat from './src/screens/Chat';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -40,6 +40,8 @@ export default function App() {
             <Stack.Screen name="Notification" component={Notification} />
             <Stack.Screen name="ChangeNumber" component={ChangeNumber} />
             <Stack.Screen name="BottomTabs" component={BottomTabs} />
+            <Stack.Screen name="Chat" component={Chat} />
+            
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

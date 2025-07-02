@@ -64,6 +64,7 @@ export const orderCard = [
     grandTotal: 1350,
     paymentMethod: "Cash on Delivery",
     specialInstructions: "Call 5 minutes before arrival.",
+    image: "https://via.placeholder.com/150",
   },
   {
     _id: "4",
@@ -86,6 +87,7 @@ export const orderCard = [
     grandTotal: 2150,
     paymentMethod: "Online Payment",
     specialInstructions: "Deliver to security guard if not home.",
+    image: "https://via.placeholder.com/150",
   },
   {
     _id: "5",
@@ -108,6 +110,7 @@ export const orderCard = [
     grandTotal: 3650,
     paymentMethod: "Cash on Delivery",
     specialInstructions: "Keep frozen items cold. Deliver in evening.",
+    image: "https://via.placeholder.com/150",
   },
   {
     _id: "6",
@@ -130,6 +133,7 @@ export const orderCard = [
     grandTotal: 1350,
     paymentMethod: "Online Payment",
     specialInstructions: "Prefer organic items only. Check expiry dates.",
+    image: "https://via.placeholder.com/150",
   },
   {
     _id: "7",
@@ -152,6 +156,7 @@ export const orderCard = [
     grandTotal: 850,
     paymentMethod: "Cash on Delivery",
     specialInstructions: "Deliver in morning. Fresh bread preferred.",
+    image: "https://via.placeholder.com/150",
   },
   {
     _id: "8",
@@ -174,39 +179,40 @@ export const orderCard = [
     grandTotal: 1340,
     paymentMethod: "Online Payment",
     specialInstructions: "Handle with care. Fragile items.",
+    image: "https://via.placeholder.com/150",
   }
 ];
 
 
 
-export const profileArray  = [
+export const profileArray = [
   {
     _id: '_1',
     title: "🧑 Your Profile",
-    routName:"ProfileDetail"
- 
+    routName: "ProfileDetail"
+
   },
   {
     _id: '2',
     title: "🔔 Activity Log",
-    routName:"ActivityLog"
-  
+    routName: "ActivityLog"
+
   },
   {
     _id: '3',
     title: "💳 Order History'",
-    routName:"OrderHistory"
-   
-  },
-  
-  {
-    _id:"4",
-    title:"🔔 Notifications",
-    routName:"Notification"
+    routName: "OrderHistory"
 
   },
- 
-  
+
+  {
+    _id: "4",
+    title: "🔔 Notifications",
+    routName: "Notification"
+
+  },
+
+
 ];
 
 
@@ -417,6 +423,44 @@ export const notifications = [
     date: '2025-07-01T13:20:00Z',
     type: 'picked',
   },
+];
+
+export const chatMessages = [
+  {
+    _id: "1",
+    message: "Hi! I'm your delivery driver. I'll be arriving in about 10 minutes.",
+    sender: "driver",
+    timestamp: "10:30 AM",
+    date: "2024-01-16"
+  },
+  {
+    _id: "2",
+    message: "Great! I'll be waiting. Please call when you arrive.",
+    sender: "user",
+    timestamp: "10:31 AM",
+    date: "2024-01-16"
+  },
+  {
+    _id: "3",
+    message: "Perfect! I'll call you when I reach your location.",
+    sender: "driver",
+    timestamp: "10:32 AM",
+    date: "2024-01-16"
+  },
+  {
+    _id: "4",
+    message: "I'm here now. Please come to the main gate.",
+    sender: "driver",
+    timestamp: "10:40 AM",
+    date: "2024-01-16"
+  },
+  {
+    _id: "5",
+    message: "Coming out now. Thank you!",
+    sender: "user",
+    timestamp: "10:41 AM",
+    date: "2024-01-16"
+  }
 ];
 
 

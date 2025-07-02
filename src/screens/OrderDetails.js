@@ -7,34 +7,36 @@ import {
   Image,
   Alert,
   FlatList,
+  Linking,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 
 import LocationModal from '../components/LocationModal';
 import OrderSection from '../components/OrderSection';
-import {moderateScale, scale, verticalScale} from '../utils/helper';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import {fonts} from '../assets/fonts/Fonts';
+import { fonts } from '../assets/fonts/Fonts';
 import Icon from '../assets/icon/Icon';
 import ImagePickerModal from '../components/ImagePickerModal';
 import Header from '../components/BacKHeader';
 import CustomButton from '../components/CustomButton';
+import { useNavigation } from '@react-navigation/native';
 
-const OrderDetails = ({route}) => {
-  const {orderData} = route?.params || {};
+const OrderDetails = ({ route }) => {
+  const { orderData } = route?.params || {};
   const [deliveryStatus, setDeliveryStatus] = useState('pending');
   const [showImageModal, setShowImageModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
-
+  const navigation = useNavigation();
 
   const handleConfirmOrder = () => {
     Alert.alert(
       'Confirm Order',
       'Are you sure you want to confirm this order for delivery?',
       [
-        {text: 'Cancel', style: 'cancel'},
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Confirm',
           onPress: () => {
@@ -56,7 +58,7 @@ const OrderDetails = ({route}) => {
       'Complete Delivery',
       'Are you sure you want to mark this delivery as completed?',
       [
-        {text: 'Cancel', style: 'cancel'},
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Complete',
           onPress: () => {
@@ -83,7 +85,7 @@ const OrderDetails = ({route}) => {
 
   const removeImage = index => {
     Alert.alert('Remove Image', 'Are you sure you want to remove this image?', [
-      {text: 'Cancel', style: 'cancel'},
+      { text: 'Cancel', style: 'cancel' },
       {
         text: 'Remove',
         style: 'destructive',
@@ -114,7 +116,7 @@ const OrderDetails = ({route}) => {
     return texts[status] || 'Unknown';
   };
 
-  const renderOrderItem = ({item}) => (
+  const renderOrderItem = ({ item }) => (
     <View style={styles.orderItem}>
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
@@ -124,10 +126,10 @@ const OrderDetails = ({route}) => {
     </View>
   );
 
-  const renderUploadedImage = ({item, index}) => (
+  const renderUploadedImage = ({ item, index }) => (
     <View style={styles.imageContainer}>
       <Image
-        source={{uri: item}}
+        source={{ uri: item }}
         style={styles.uploadedImage}
         resizeMode="cover"
       />
@@ -149,7 +151,13 @@ const OrderDetails = ({route}) => {
     );
   }
 
- 
+  const handleCallDriver = () => {
+    Linking.openURL(`tel:${orderData.phone}`);
+  };
+
+  const handleWhatsapp = () => {
+    Linking.openURL(`https://wa.me/${orderData.phone}`);
+  };
 
   return (
     <AppSkeleton>
@@ -161,7 +169,7 @@ const OrderDetails = ({route}) => {
           <View
             style={[
               styles.statusBadge,
-              {backgroundColor: getStatusColor(deliveryStatus)},
+              { backgroundColor: getStatusColor(deliveryStatus) },
             ]}>
             <Text style={styles.statusText}>
               {getStatusText(deliveryStatus)}
@@ -224,6 +232,17 @@ const OrderDetails = ({route}) => {
             <Text style={styles.paymentLabel}>Payment Method:</Text>
             <Text style={styles.paymentValue}>{orderData.paymentMethod}</Text>
           </View>
+          <View style={styles.callButtonContainer}>
+            <TouchableOpacity style={styles.callButton} >
+              <Icon family="Ionicons" name="call" size={20} color={Colors.white} onPress={handleCallDriver} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.callButton} onPress={() => { navigation.navigate('Chat', { driver: orderData }) }}>
+              <Icon family="Entypo" name="message" size={20} color={Colors.white} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.callButton}>
+              <Icon family="FontAwesome" name="whatsapp" size={20} color={Colors.white} onPress={handleWhatsapp} />
+            </TouchableOpacity>
+          </View>
         </OrderSection>
 
         {/* Special Instructions */}
@@ -276,19 +295,19 @@ const OrderDetails = ({route}) => {
             deliveryStatus === 'pending'
               ? handleConfirmOrder
               : deliveryStatus === 'confirmed'
-              ? handleStartDelivery
-              : deliveryStatus === 'inProgress'
-              ? handleCompleteDelivery
-              : () => {}
+                ? handleStartDelivery
+                : deliveryStatus === 'inProgress'
+                  ? handleCompleteDelivery
+                  : () => { }
           }
           label={
             deliveryStatus === 'pending'
               ? 'Confirm Order'
               : deliveryStatus === 'confirmed'
-              ? 'Start Delivery'
-              : deliveryStatus === 'inProgress'
-              ? 'Complete Delivery'
-              : null
+                ? 'Start Delivery'
+                : deliveryStatus === 'inProgress'
+                  ? 'Complete Delivery'
+                  : null
           }
           btnStyle={{
             width: '95%',
@@ -297,10 +316,10 @@ const OrderDetails = ({route}) => {
               deliveryStatus === 'pending'
                 ? Colors?.verify
                 : deliveryStatus === 'confirmed'
-                ? Colors?.btnColor
-                : deliveryStatus === 'inProgress'
-                ? Colors?.green
-                : Colors?.gray,
+                  ? Colors?.btnColor
+                  : deliveryStatus === 'inProgress'
+                    ? Colors?.green
+                    : Colors?.gray,
             alignSelf: 'center',
           }}
         />
@@ -316,7 +335,7 @@ const OrderDetails = ({route}) => {
         visible={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         location={orderData.location}
-        coordinates={{lat: orderData.lat, lng: orderData.lng}}
+        coordinates={{ lat: orderData.lat, lng: orderData.lng }}
       />
     </AppSkeleton>
   );
@@ -325,7 +344,7 @@ const OrderDetails = ({route}) => {
 export default OrderDetails;
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: Colors.white},
+  container: { flex: 1, backgroundColor: Colors.white },
   header: {
     backgroundColor: Colors.white,
     width: '100%',
@@ -376,7 +395,7 @@ const styles = StyleSheet.create({
     color: Colors.orange,
     marginLeft: scale(5),
   },
-  customerInfo: {marginTop: verticalScale(5)},
+  customerInfo: { marginTop: verticalScale(5) },
   customerName: {
     fontSize: moderateScale(16),
     fontFamily: fonts.bold,
@@ -409,7 +428,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.greyV4,
   },
-  itemInfo: {flex: 1},
+  itemInfo: { flex: 1 },
   itemName: {
     fontSize: moderateScale(14),
     fontFamily: fonts.medium,
@@ -475,6 +494,20 @@ const styles = StyleSheet.create({
     color: Colors.grey,
     marginTop: verticalScale(2),
   },
+  callButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: scale(12),
+  },
+  callButton: {
+    backgroundColor: Colors.orange,
+    width: moderateScale(45),
+    height: moderateScale(45),
+    borderRadius: moderateScale(22.5),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   instructionsText: {
     fontSize: moderateScale(14),
     fontFamily: fonts.regular,
@@ -488,9 +521,9 @@ const styles = StyleSheet.create({
     color: Colors.grey,
     marginBottom: verticalScale(10),
   },
-  imagesList: {marginBottom: verticalScale(10)},
-  imageContainer: {marginRight: scale(10), position: 'relative'},
-  uploadedImage: {width: scale(80), height: scale(80), borderRadius: scale(8)},
+  imagesList: { marginBottom: verticalScale(10) },
+  imageContainer: { marginRight: scale(10), position: 'relative' },
+  uploadedImage: { width: scale(80), height: scale(80), borderRadius: scale(8) },
   removeImageButton: {
     position: 'absolute',
     top: 0,
