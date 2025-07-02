@@ -9,20 +9,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import AppSkeleton from '../components/AppSkeleton';
-import {moderateScale, scale, verticalScale} from '../utils/helper';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import {fonts} from '../assets/fonts/Fonts';
-import {orderCard} from '../assets/dummyData/dummyData';
-import {useNavigation} from '@react-navigation/native';
+import { fonts } from '../assets/fonts/Fonts';
+import { orderCard } from '../assets/dummyData/dummyData';
+import { useNavigation } from '@react-navigation/native';
 import Icon from '../assets/icon/Icon';
 import CustomButton from '../components/CustomButton';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const TAB_WIDTH = (width * 0.916) / 2;
 
-const HistoryTab = ({onPress, item, isSelected, onLongPress}) => {
+const HistoryTab = ({ onPress, item, isSelected, onLongPress }) => {
   // const { selected } = useSelector(state => state?.language);
 
   return (
@@ -32,13 +32,13 @@ const HistoryTab = ({onPress, item, isSelected, onLongPress}) => {
         style={[
           styles.card,
           isSelected &&
-            {
-              // backgroundColor: 'rgba(55, 160, 0, 0.1)', // light orange with opacity
-              // borderColor: Colors.orange,
-              // borderWidth: 1,
-              // borderLeftWidth: isSelected ? 6 : 4,
-              // borderLeftColor: isSelected ? Colors.orange : Colors.greyV2,
-            },
+          {
+            // backgroundColor: 'rgba(55, 160, 0, 0.1)', // light orange with opacity
+            // borderColor: Colors.orange,
+            // borderWidth: 1,
+            // borderLeftWidth: isSelected ? 6 : 4,
+            // borderLeftColor: isSelected ? Colors.orange : Colors.greyV2,
+          },
         ]}
         onPress={onPress}>
         <Text style={styles?.order}>
@@ -54,7 +54,7 @@ const HistoryTab = ({onPress, item, isSelected, onLongPress}) => {
           Type: <Text style={styles?.type}>{item?.type}</Text>
         </Text>
         <Text
-          onPress={() => navigation?.navigate('MapScreen', {orderData: item})}
+          onPress={() => navigation?.navigate('MapScreen', { orderData: item })}
           style={styles?.map}>
           View Map
         </Text>
@@ -91,7 +91,7 @@ const Order = () => {
   };
 
 
-   const handleCheck2 = () => {
+  const handleCheck2 = () => {
     setCheck2(prev => {
       const next = !prev;
       if (next) {
@@ -108,58 +108,58 @@ const Order = () => {
 
 
   const handleSelect = (id, isLongPress = false) => {
-  if (isLongPress && !selectionMode) {
-    setSelectionMode(true);
-  }
-
-  if (!selectionMode && !isLongPress) return;
-
-  setSelected(prev => {
-    let newSelected;
-    if (prev?.includes(id)) {
-      newSelected = prev.filter(item => item !== id);
-    } else {
-      newSelected = [...prev, id];
+    if (isLongPress && !selectionMode) {
+      setSelectionMode(true);
     }
 
-    if (newSelected.length === 0) {
-      setSelectionMode(false);
+    if (!selectionMode && !isLongPress) return;
+
+    setSelected(prev => {
+      let newSelected;
+      if (prev?.includes(id)) {
+        newSelected = prev.filter(item => item !== id);
+      } else {
+        newSelected = [...prev, id];
+      }
+
+      if (newSelected.length === 0) {
+        setSelectionMode(false);
+      }
+
+      const allIds = orderCard.map(item => item._id);
+      const allSelected = allIds.every(id => newSelected.includes(id));
+      setCheck(allSelected);
+
+      return newSelected;
+    });
+  };
+
+  const handleSelect2 = (id, isLongPress = false) => {
+    if (isLongPress && !selectionMode2) {
+      setSelectionMode2(true);
     }
 
-    const allIds = orderCard.map(item => item._id);
-    const allSelected = allIds.every(id => newSelected.includes(id));
-    setCheck(allSelected);
+    if (!selectionMode2 && !isLongPress) return;
 
-    return newSelected;
-  });
-};
+    setSelected2(prev => {
+      let newSelected;
+      if (prev.includes(id)) {
+        newSelected = prev.filter(item => item !== id);
+      } else {
+        newSelected = [...prev, id];
+      }
 
-const handleSelect2 = (id, isLongPress = false) => {
-  if (isLongPress && !selectionMode2) {
-    setSelectionMode2(true);
-  }
+      if (newSelected.length === 0) {
+        setSelectionMode2(false);
+      }
 
-  if (!selectionMode2 && !isLongPress) return;
+      const allIds = orderCard.slice(0, 4).map(item => item._id);
+      const allSelected = allIds.every(id => newSelected.includes(id));
+      setCheck2(allSelected);
 
-  setSelected2(prev => {
-    let newSelected;
-    if (prev.includes(id)) {
-      newSelected = prev.filter(item => item !== id);
-    } else {
-      newSelected = [...prev, id];
-    }
-
-    if (newSelected.length === 0) {
-      setSelectionMode2(false);
-    }
-
-    const allIds = orderCard.slice(0, 4).map(item => item._id);
-    const allSelected = allIds.every(id => newSelected.includes(id));
-    setCheck2(allSelected);
-
-    return newSelected;
-  });
-};
+      return newSelected;
+    });
+  };
 
   const handlePress = index => {
     setActiveTab(index);
@@ -174,7 +174,7 @@ const handleSelect2 = (id, isLongPress = false) => {
       case 0:
         return (
           <>
-             {selected?.length > 0 && (
+            {selected?.length > 0 && (
               <View
                 style={{
                   flexDirection: 'row-reverse',
@@ -225,7 +225,7 @@ const handleSelect2 = (id, isLongPress = false) => {
                           },
                         },
                       ],
-                      {cancelable: true},
+                      { cancelable: true },
                     );
                   }}
                 />
@@ -240,20 +240,20 @@ const handleSelect2 = (id, isLongPress = false) => {
                 padding: verticalScale(1),
                 marginTop: verticalScale(10),
               }}
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <HistoryTab
                   item={item}
                   onPress={() =>
                     selectionMode
                       ? handleSelect(item._id)
-                      : navigation?.navigate('OrderDetails', {orderData: item})
+                      : navigation?.navigate('OrderDetails', { orderData: item })
                   }
                   onLongPress={() => handleSelect(item._id, true)}
                   isSelected={selected?.includes(item._id)}
                 />
               )}
               contentContainerStyle={{
-                paddingBottom: selected.length>0 ? verticalScale(90):verticalScale(45),
+                paddingBottom: selected.length > 0 ? verticalScale(90) : verticalScale(45),
                 gap: verticalScale(20),
               }}
             />
@@ -313,7 +313,7 @@ const handleSelect2 = (id, isLongPress = false) => {
                           },
                         },
                       ],
-                      {cancelable: true},
+                      { cancelable: true },
                     );
                   }}
                 />
@@ -324,21 +324,21 @@ const handleSelect2 = (id, isLongPress = false) => {
               data={orderCard.slice(0, 4)}
               showsVerticalScrollIndicator={false}
               keyExtractor={item => item?._id}
-              style={{padding: verticalScale(1), marginTop: verticalScale(10)}}
-              renderItem={({item, index}) => (
+              style={{ padding: verticalScale(1), marginTop: verticalScale(10) }}
+              renderItem={({ item, index }) => (
                 <HistoryTab
                   item={item}
                   onPress={() =>
                     selectionMode2
                       ? handleSelect2(item._id)
-                      : navigation?.navigate('OrderDetails', {orderData: item})
+                      : navigation?.navigate('OrderDetails', { orderData: item })
                   }
                   onLongPress={() => handleSelect2(item._id, true)}
                   isSelected={selected2?.includes(item._id)}
                 />
               )}
               contentContainerStyle={{
-                paddingBottom: selected2?.length>0 ? verticalScale(90):verticalScale(45),
+                paddingBottom: selected2?.length > 0 ? verticalScale(90) : verticalScale(45),
                 gap: verticalScale(20),
               }}
             />
@@ -366,12 +366,12 @@ const handleSelect2 = (id, isLongPress = false) => {
           </TouchableOpacity>
         ))}
       </View>
-      <Animated.View style={[styles?.indicator, {transform: [{translateX}]}]} />
-      
+      <Animated.View style={[styles?.indicator, { transform: [{ translateX }] }]} />
+
       <View style={styles?.tabContainer}>
-       
+
         {renderContent()}
-        </View>
+      </View>
       {/* </View> */}
     </AppSkeleton>
   );
@@ -430,12 +430,12 @@ const styles = StyleSheet.create({
     borderLeftWidth: scale(4),
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     borderLeftColor: Colors?.orange,
     gap: verticalScale(7),
-    width:"100%"
+    width: "100%"
     // alignSelf:'center',
   },
   order: {
