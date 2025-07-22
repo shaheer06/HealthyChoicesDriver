@@ -200,7 +200,7 @@ export const profileArray = [
   },
   {
     _id: '3',
-    title: "💳 Order History'",
+    title: "💳 Order History",
     routName: "OrderHistory"
 
   },

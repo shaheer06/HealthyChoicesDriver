@@ -1,14 +1,14 @@
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 import moment from 'moment';
-import {moderateScale, scale, verticalScale} from '../utils/helper';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import {fonts} from '../assets/fonts/Fonts';
+import { fonts } from '../assets/fonts/Fonts';
 import Header from '../components/BacKHeader';
-import {orderHistory} from '../assets/dummyData/dummyData';
+import { orderHistory } from '../assets/dummyData/dummyData';
 
-const OrderBox = ({item}) => {
+const OrderBox = ({ item }) => {
   return (
     <View style={styles?.container}>
       <Text style={styles?.orderId}>{item?.orderId}</Text>
@@ -20,12 +20,12 @@ const OrderBox = ({item}) => {
               item.status === 'Delivered'
                 ? Colors?.verify
                 : item.status === 'Cancelled'
-                ? Colors?.notValid
-                : item.status === 'Returned'
-                ? Colors?.btnColor
-                : item.status === 'Out for Delivery'
-                ? Colors?.green
-                : null,
+                  ? Colors?.notValid
+                  : item.status === 'Returned'
+                    ? Colors?.btnColor
+                    : item.status === 'Out for Delivery'
+                      ? Colors?.green
+                      : null,
           },
         ]}>
         {item?.status}
@@ -48,7 +48,7 @@ const OrderBox = ({item}) => {
 
         <Text style={styles?.date}>{moment(item?.date).format('LLLL')}</Text>
       </View>
-      <View style={{flexDirection: 'row', gap: scale(2), alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', gap: scale(2), alignItems: 'center' }}>
         <Text>Payment Method:</Text>
         <Text style={styles?.name}>{item?.paymentMethod}</Text>
       </View>
@@ -65,18 +65,18 @@ const OrderBox = ({item}) => {
 
 const OrderHistory = () => {
   return (
-    <AppSkeleton>
+    <AppSkeleton disableScroll={true}>
       <Header showText={true} text="Order History" />
       <FlatList
         showsVerticalScrollIndicator={false}
         data={orderHistory}
-        style={{marginTop: verticalScale(10)}}
+        style={{ marginTop: verticalScale(10) }}
         contentContainerStyle={{
           gap: verticalScale(10),
           paddingBottom: verticalScale(20),
         }}
         keyExtractor={item => item?._id}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return <OrderBox item={item} />;
         }}
       />
