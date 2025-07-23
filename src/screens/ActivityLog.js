@@ -1,14 +1,14 @@
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 import Header from '../components/BacKHeader';
 import moment from 'moment';
-import {moderateScale, scale, verticalScale} from '../utils/helper';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import {fonts} from '../assets/fonts/Fonts';
-import {mealData} from '../assets/dummyData/dummyData';
+import { fonts } from '../assets/fonts/Fonts';
+import { mealData } from '../assets/dummyData/dummyData';
 
-const ActivityBox = ({item}) => {
+const ActivityBox = ({ item }) => {
   return (
     <View style={styles?.container}>
       <Text style={styles?.meal}>{item?.meal}</Text>
@@ -28,15 +28,15 @@ const ActivityBox = ({item}) => {
 
 const ActivityLog = () => {
   return (
-    <AppSkeleton>
+    <AppSkeleton disableScroll={true}>
       <Header showText={true} text="Activity Log" />
       <FlatList
-      style={{marginTop:verticalScale(10)}}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{gap:verticalScale(10),paddingBottom:verticalScale(20)}}
+        style={{ marginTop: verticalScale(10) }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ gap: verticalScale(10), paddingBottom: verticalScale(20) }}
         data={mealData}
         keyExtractor={item => item?._id}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return <ActivityBox item={item} />;
         }}
       />

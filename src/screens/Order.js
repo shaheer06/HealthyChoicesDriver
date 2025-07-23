@@ -22,7 +22,7 @@ import CustomButton from '../components/CustomButton';
 const { width, height } = Dimensions.get('window');
 const TAB_WIDTH = (width * 0.916) / 2;
 
-const HistoryTab = ({ onPress, item, isSelected, onLongPress }) => {
+const HistoryTab = ({ onPress, item, isSelected, onLongPress, navigation }) => {
   // const { selected } = useSelector(state => state?.language);
 
   return (
@@ -250,6 +250,7 @@ const Order = () => {
                   }
                   onLongPress={() => handleSelect(item._id, true)}
                   isSelected={selected?.includes(item._id)}
+                  navigation={navigation}
                 />
               )}
               contentContainerStyle={{
@@ -335,6 +336,7 @@ const Order = () => {
                   }
                   onLongPress={() => handleSelect2(item._id, true)}
                   isSelected={selected2?.includes(item._id)}
+                  navigation={navigation}
                 />
               )}
               contentContainerStyle={{
@@ -348,7 +350,7 @@ const Order = () => {
   };
 
   return (
-    <AppSkeleton>
+    <AppSkeleton disableScroll={true}>
       {/* <View style={{flex:1}} > */}
       <View style={styles?.tabRow}>
         {['Morning', 'Evening'].map((tab, index) => (
@@ -417,7 +419,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors?.orange,
   },
   tabContainer: {
-    width: '95%',
+    width: '100%',
     alignSelf: 'center',
     marginTop: verticalScale(12),
   },

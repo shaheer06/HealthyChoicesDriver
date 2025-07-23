@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useRef} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useRef } from 'react';
 import {
   Animated,
   Image,
@@ -8,11 +8,13 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {moderateScale} from '../utils/helper';
+import { moderateScale } from '../utils/helper';
+import { useSelector } from 'react-redux';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const { isLoggedIn } = useSelector(state => state?.user);
 
 
   useEffect(() => {
@@ -23,14 +25,20 @@ const SplashScreen = () => {
     }).start();
 
     const timer = setTimeout(() => {
-    
+      if (isLoggedIn) {
+        navigation?.reset({
+          index: 0,
+          routes: [{ name: 'BottomTabs' }],
+        });
+      } else {
         navigation?.replace('LoginScreen');
+      }
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -40,7 +48,7 @@ const SplashScreen = () => {
       <ImageBackground
         source={require('../assets/images/splash.png')}
         resizeMode="cover"
-        style={{width: '100%', height: '100%', flex: 1}}>
+        style={{ width: '100%', height: '100%', flex: 1 }}>
         {/* <View style={styles?.container}> */}
         <Image
           style={styles?.img}
@@ -48,7 +56,7 @@ const SplashScreen = () => {
         />
         <View style={styles?.container}>
           <Animated.Image
-            style={[styles?.img2, {opacity: fadeAnim}]}
+            style={[styles?.img2, { opacity: fadeAnim }]}
             source={require('../assets/images/image2.png')}
           />
         </View>

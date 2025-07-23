@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -9,19 +10,25 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 import Header from '../components/BacKHeader';
 import Icon from '../assets/icon/Icon';
-import {moderateScale, scale, verticalScale} from '../utils/helper';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import {fonts} from '../assets/fonts/Fonts';
+import { fonts } from '../assets/fonts/Fonts';
 import ImagePickerModal from '../components/ImagePickerModal';
-import {useNavigation} from '@react-navigation/native';
-import {profileArray} from '../assets/dummyData/dummyData';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { profileArray } from '../assets/dummyData/dummyData';
 import CustomButton from '../components/CustomButton';
+import { logoutUser, setUserData } from '../store/slices/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { BASE_URL } from '../utils/apiUrl';
+import { updateUserProfile } from '../utils/updateUserProfile';
+import PopUp from '../Popup/PopUp';
+import api from '../utils/apiUrl';
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 const isTablet =
   height > 950 ? height * 0.15 : height * 0.2 && Platform.OS === 'ios';
@@ -29,7 +36,7 @@ const isTablet =
 const PROFILE_IMG_SIZE = width * 0.2;
 const PROFILE_SECTION_HEIGHT = verticalScale(220);
 
-const ProfileBox = ({item, onPress, style}) => {
+const ProfileBox = ({ item, onPress, style }) => {
   return (
     <TouchableOpacity
       style={[styles?.container, style]}
@@ -50,14 +57,38 @@ const ProfileBox = ({item, onPress, style}) => {
 };
 
 const Profile = () => {
+  const { userData } = useSelector(state => state?.user);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(
+    `${BASE_URL}/${userData?.data?.imageUrl}`,
+  );
+
+  console.log(selectedImage, 'selectedImage', userData?.data);
   const [showEditIcon, setShowEditIcon] = useState(false);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleImagePicked = image => {
+  const handleImagePicked = async image => {
     setSelectedImage(image?.uri);
+
+    const payload = {
+      name: userData?.data?.name,
+      mobile: userData?.data?.mobile,
+    };
+    setIsLoading(true); // 👈 Start loading
+    try {
+      const response = await updateUserProfile(userData?.data?._id, payload, image?.uri);
+      dispatch(setUserData(response?.data));
+      PopUp.show('Success', 'success', 4000, 'Profile Image updated');
+    } catch (error) {
+      console.log(error, 'Imagee error');
+      PopUp.show('Error', 'error', 4000, 'Failed to update image');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   return (
     <>
       <AppSkeleton>
@@ -72,14 +103,14 @@ const Profile = () => {
           <View style={styles.decorativeCircle4} />
 
           <Header
-            styleContainer={{paddingHorizontal: scale(10)}}
+            styleContainer={{ paddingHorizontal: scale(10) }}
             type={1}
             text={'Profile'}
-            text3={{color: Colors?.white}}
+            text3={{ color: Colors?.white }}
             iconColor={Colors?.white}
             color={Colors?.white}
             showText={true}
-            // onHamburgerPress={() => setSheetVisible(true)}
+          // onHamburgerPress={() => setSheetVisible(true)}
           />
 
           <View style={styles.profileContentContainer}>
@@ -88,15 +119,29 @@ const Profile = () => {
                 style={styles.profileImageWrapper}
                 onPress={() => setShowEditIcon(!showEditIcon)}>
                 <View style={styles.profileImageBorder}>
-                  <Image
-                    source={
-                      selectedImage
-                        ? {uri: selectedImage}
-                        : require('../assets/images/profile2.jpg')
-                    }
-                    style={styles.profileImage}
-                    resizeMode="cover"
-                  />
+                  {isLoading ? (
+                    <ActivityIndicator
+                      size="large"
+                      color={Colors.selectionColor}
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      source={
+                        selectedImage
+                          ? { uri: selectedImage }
+                          : require('../assets/images/profile2.jpg')
+                      }
+                      style={styles.profileImage}
+                      resizeMode="cover"
+                    />
+                  )}
                 </View>
 
                 {showEditIcon && (
@@ -122,10 +167,10 @@ const Profile = () => {
 
             {/* {userData?.data?.name && ( */}
             <View style={styles.nameContainer}>
-              <Text style={styles.userName}>{'shaheer'}</Text>
+              <Text style={styles.userName}>{userData?.data?.name}</Text>
               <View style={styles.statusIndicator}>
                 <View style={styles.statusDot} />
-                <Text style={styles.statusText}>Active</Text>
+                <Text style={styles.statusText}>{userData?.data?.status}</Text>
               </View>
             </View>
             {/* // )} */}
@@ -133,8 +178,8 @@ const Profile = () => {
         </View>
 
         <ScrollView style={styles?.main}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: scale(20)}}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: scale(20) }}
         >
           {profileArray?.map((item, index) => (
             <ProfileBox
@@ -158,10 +203,16 @@ const Profile = () => {
             );
           }}
         /> */}
-        <CustomButton 
-        label={"Logout"}
-        btnStyle={{alignSelf:'center',width:"100%"}}
-        onPress={()=>navigation?.navigate("LoginScreen")}
+        <CustomButton
+          label={"Logout"}
+          btnStyle={{ alignSelf: 'center', width: "100%" }}
+          onPress={() => {
+            dispatch(logoutUser(null));
+            navigation?.reset({
+              index: 0,
+              routes: [{ name: 'LoginScreen' }],
+            });
+          }}
         />
       </AppSkeleton>
       <ImagePickerModal
@@ -286,7 +337,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts?.bold,
     color: Colors.white,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: {width: 0, height: verticalScale(1)},
+    textShadowOffset: { width: 0, height: verticalScale(1) },
     textShadowRadius: scale(3),
   },
   statusIndicator: {
@@ -346,15 +397,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors?.white,
     elevation: 5,
     shadowColor: Colors?.black,
-    shadowOffset: {height: 2, width: 0},
+    shadowOffset: { height: 2, width: 0 },
     shadowOpacity: 0.3,
     padding: verticalScale(15),
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: scale(5),
     flexDirection: 'row',
-      borderWidth:0.17,
-      // borderColor:Colors?.white
+    borderWidth: 0.17,
+    // borderColor:Colors?.white
   },
   txt: {
     color: Colors?.black,
@@ -368,6 +419,6 @@ const styles = StyleSheet.create({
           ? height * 0.03
           : height * 0.02
         : height * 0.04,
- 
+
   },
 });

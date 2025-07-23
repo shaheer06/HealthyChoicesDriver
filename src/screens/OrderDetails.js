@@ -160,7 +160,7 @@ const OrderDetails = ({ route }) => {
   };
 
   return (
-    <AppSkeleton>
+    <AppSkeleton disableScroll={true}>
       <Header />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
