@@ -17,6 +17,7 @@ const userSlice = createSlice({
     setAddress(state, action) {
       state.address = action.payload;
     },
+
     logoutUser(state) {
       state.userData = null;
       state.isLoggedIn = false;

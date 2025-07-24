@@ -8,6 +8,14 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/react-native-permissions/scripts/setup.rb'
+
+# ✅ Declare the permissions you want (LocationWhenInUse only for maps)
+setup_permissions([
+  'LocationWhenInUse',
+])
+
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
@@ -31,8 +39,9 @@ target 'HealthyChoicesDriver' do
   pod 'react-native-maps/Google', :path => rn_maps_path
 
     # ✅ Permissions Setup
-  permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
+  # permissions_path = '../node_modules/react-native-permissions/ios'
+  # pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
+
 
 
   post_install do |installer|

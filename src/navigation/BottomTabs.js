@@ -8,6 +8,7 @@ import Home from '../screens/Home';
 import Order from '../screens/Order';
 import Profile from '../screens/Profile';
 import Icon from '../assets/icon/Icon';
+import OneTime from '../screens/OneTime';
 
 const Tab = createBottomTabNavigator();
 const { height } = Dimensions.get('window');
@@ -63,6 +64,14 @@ const BottomTabs = () => {
                   {...iconProps}
                 />
               );
+               case 'OneTime':
+              return (
+                <Icon
+                  family="MaterialIcons"
+                  name={focused ? 'all-inbox' : 'inbox'}
+                  {...iconProps}
+                />
+              );
             // case 'Profile':
             //   return (
             //     <Icon
@@ -79,6 +88,7 @@ const BottomTabs = () => {
                   {...iconProps}
                 />
               );
+             
             default:
               return null;
           }
@@ -86,7 +96,7 @@ const BottomTabs = () => {
       })}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Order" component={Order} />
-      {/* <Tab.Screen name="Store" component={Store} /> */}
+      <Tab.Screen name="OneTime" component={OneTime} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );

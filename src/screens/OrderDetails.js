@@ -9,48 +9,93 @@ import {
   FlatList,
   Linking,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 
 import LocationModal from '../components/LocationModal';
 import OrderSection from '../components/OrderSection';
-import { moderateScale, scale, verticalScale } from '../utils/helper';
+import {moderateScale, scale, verticalScale} from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import { fonts } from '../assets/fonts/Fonts';
+import {fonts} from '../assets/fonts/Fonts';
 import Icon from '../assets/icon/Icon';
 import ImagePickerModal from '../components/ImagePickerModal';
 import Header from '../components/BacKHeader';
 import CustomButton from '../components/CustomButton';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import api from '../utils/apiUrl';
 
-const OrderDetails = ({ route }) => {
-  const { orderData } = route?.params || {};
-  const [deliveryStatus, setDeliveryStatus] = useState('pending');
+const OrderDetails = ({route}) => {
+  const {orderData} = route?.params || {};
+  // console.log(orderData?._id,
+  //   "Order DAtaa"
+  // )
+  const [deliveryStatus, setDeliveryStatus] = useState('Pending');
   const [showImageModal, setShowImageModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
   const navigation = useNavigation();
+
+  const STATUS = {
+    PENDING: 'Pending',
+    READY_FOR_DELIVERY: 'Ready For Delivery',
+    IN_PROGRESS: 'Delivery Inbound',
+    DELIVERED: 'Delivered',
+  };
+
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const response = await api.post(
+        `/api/storefront/driver-orders/orders/${orderId}`,
+        {status},
+      );
+      console.log("Status",status)
+      return response?.data;
+    } catch (error) {
+      console.error('Error updating order status:', error?.response?.data);
+    }
+  };
+
+  useEffect(() => {
+    if (orderData?._id) {
+      updateOrderStatus(orderData._id, STATUS.PENDING)
+        .then(() => setDeliveryStatus(STATUS.PENDING))
+        .catch(() => Alert.alert('Error', 'Failed to set order as pending'));
+    }
+  }, []);
 
   const handleConfirmOrder = () => {
     Alert.alert(
       'Confirm Order',
       'Are you sure you want to confirm this order for delivery?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Confirm',
-          onPress: () => {
-            setDeliveryStatus('confirmed');
-            Alert.alert('Success', 'Order confirmed for delivery!');
+          onPress: async () => {
+            try {
+              await updateOrderStatus(orderData._id, STATUS.READY_FOR_DELIVERY);
+              setDeliveryStatus(STATUS.READY_FOR_DELIVERY);
+              Alert.alert('Success', 'Order confirmed for delivery!');
+            } catch {
+              Alert.alert('Error', 'Failed to confirm order.');
+            }
           },
         },
       ],
     );
   };
 
-  const handleStartDelivery = () => {
-    setDeliveryStatus('inProgress');
-    Alert.alert('Delivery Started', 'You can now start your delivery journey!');
+  const handleStartDelivery = async () => {
+    try {
+      await updateOrderStatus(orderData._id, STATUS.IN_PROGRESS);
+      setDeliveryStatus(STATUS.IN_PROGRESS);
+      Alert.alert(
+        'Delivery Started',
+        'You can now start your delivery journey!',
+      );
+    } catch {
+      Alert.alert('Error', 'Failed to start delivery.');
+    }
   };
 
   const handleCompleteDelivery = () => {
@@ -58,12 +103,17 @@ const OrderDetails = ({ route }) => {
       'Complete Delivery',
       'Are you sure you want to mark this delivery as completed?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Complete',
-          onPress: () => {
-            setDeliveryStatus('delivered');
-            Alert.alert('Success', 'Delivery completed successfully!');
+          onPress: async () => {
+            try {
+              await updateOrderStatus(orderData._id, STATUS.DELIVERED);
+              setDeliveryStatus(STATUS.DELIVERED);
+              Alert.alert('Success', 'Delivery completed successfully!');
+            } catch {
+              Alert.alert('Error', 'Failed to complete delivery.');
+            }
           },
         },
       ],
@@ -85,7 +135,7 @@ const OrderDetails = ({ route }) => {
 
   const removeImage = index => {
     Alert.alert('Remove Image', 'Are you sure you want to remove this image?', [
-      { text: 'Cancel', style: 'cancel' },
+      {text: 'Cancel', style: 'cancel'},
       {
         text: 'Remove',
         style: 'destructive',
@@ -98,38 +148,38 @@ const OrderDetails = ({ route }) => {
 
   const getStatusColor = status => {
     const colors = {
-      pending: Colors.orange,
-      confirmed: Colors.verify,
-      inProgress: Colors.btnColor,
-      delivered: Colors.green,
+      [STATUS.PENDING]: Colors.orange,
+      [STATUS.READY_FOR_DELIVERY]: Colors.verify,
+      [STATUS.IN_PROGRESS]: Colors.btnColor,
+      [STATUS.DELIVERED]: Colors.green,
     };
     return colors[status] || Colors.grey;
   };
 
   const getStatusText = status => {
     const texts = {
-      pending: 'Pending',
-      confirmed: 'Confirmed',
-      inProgress: 'In Progress',
-      delivered: 'Delivered',
+      [STATUS.PENDING]: 'Pending',
+      [STATUS.READY_FOR_DELIVERY]: 'Ready For Delivery',
+      [STATUS.IN_PROGRESS]: 'Delivery Inbound',
+      [STATUS.DELIVERED]: 'Delivered',
     };
     return texts[status] || 'Unknown';
   };
 
-  const renderOrderItem = ({ item }) => (
+  const renderOrderItem = ({item}) => (
     <View style={styles.orderItem}>
       <View style={styles.itemInfo}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
+        <Text style={styles.itemName}>{item?.title}</Text>
+        <Text style={styles.itemQuantity}>Qty: {item?.qty}</Text>
       </View>
-      <Text style={styles.itemPrice}>Rs. {item.price}</Text>
+      <Text style={styles.itemPrice}>Rs. {item?.price}</Text>
     </View>
   );
 
-  const renderUploadedImage = ({ item, index }) => (
+  const renderUploadedImage = ({item, index}) => (
     <View style={styles.imageContainer}>
       <Image
-        source={{ uri: item }}
+        source={{uri: item}}
         style={styles.uploadedImage}
         resizeMode="cover"
       />
@@ -158,7 +208,16 @@ const OrderDetails = ({ route }) => {
   const handleWhatsapp = () => {
     Linking.openURL(`https://wa.me/${orderData.phone}`);
   };
-
+  const fullAddress = [
+    orderData?.customerId?.address?.home?.flat_house_no,
+    orderData?.customerId?.address?.home?.road_building,
+    orderData?.customerId?.address?.home?.block,
+    orderData?.customerId?.address?.home?.city,
+    orderData?.customerId?.address?.home?.governorate,
+    // item?.home?.additionalNotes,
+  ]
+    .filter(Boolean) // Removes null/undefined/empty strings
+    .join(', ');
   return (
     <AppSkeleton disableScroll={true}>
       <Header />
@@ -169,7 +228,7 @@ const OrderDetails = ({ route }) => {
           <View
             style={[
               styles.statusBadge,
-              { backgroundColor: getStatusColor(deliveryStatus) },
+              {backgroundColor: getStatusColor(deliveryStatus)},
             ]}>
             <Text style={styles.statusText}>
               {getStatusText(deliveryStatus)}
@@ -189,9 +248,13 @@ const OrderDetails = ({ route }) => {
           title="Customer Information"
           style={styles.customerInfo}>
           <View style={styles.customerInfo}>
-            <Text style={styles.customerName}>{orderData.name}</Text>
-            <Text style={styles.customerPhone}>{orderData.phone}</Text>
-            <Text style={styles.customerAddress}>{orderData.location}</Text>
+            <Text style={styles.customerName}>
+              {orderData.customerId?.name}
+            </Text>
+            <Text style={styles.customerPhone}>
+              {orderData?.customerId?.mobile}
+            </Text>
+            <Text style={styles.customerAddress}>{fullAddress}</Text>
           </View>
         </OrderSection>
 
@@ -201,7 +264,7 @@ const OrderDetails = ({ route }) => {
           title="Delivery Location"
           showMapIcon={true}
           onMapPress={() => setShowLocationModal(true)}>
-          <Text style={styles.locationText}>{orderData.location}</Text>
+          <Text style={styles.locationText}>{fullAddress}</Text>
         </OrderSection>
 
         {/* Order Items */}
@@ -218,29 +281,59 @@ const OrderDetails = ({ route }) => {
         <OrderSection icon="calculator" title="Order Summary">
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal:</Text>
-            <Text style={styles.summaryValue}>Rs. {orderData.totalAmount}</Text>
+            <Text style={styles.summaryValue}>Rs. {orderData.subtotal}</Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Delivery Fee:</Text>
-            <Text style={styles.summaryValue}>Rs. {orderData.deliveryFee}</Text>
+            <Text style={styles.summaryValue}>
+              Rs. {orderData.deliveryAmount}
+            </Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Vat:</Text>
+            <Text style={styles.summaryValue}>
+              Rs. {Number(orderData.vat).toFixed(1)}
+            </Text>
           </View>
           <View style={[styles.summaryRow, styles.totalRow]}>
-            <Text style={styles.totalLabel}>Total:</Text>
+            <Text style={styles.totalLabel}>Grand Total:</Text>
             <Text style={styles.totalValue}>Rs. {orderData.grandTotal}</Text>
           </View>
+
           <View style={styles.paymentMethod}>
             <Text style={styles.paymentLabel}>Payment Method:</Text>
             <Text style={styles.paymentValue}>{orderData.paymentMethod}</Text>
           </View>
           <View style={styles.callButtonContainer}>
-            <TouchableOpacity style={styles.callButton} >
-              <Icon family="Ionicons" name="call" size={20} color={Colors.white} onPress={handleCallDriver} />
+            <TouchableOpacity style={styles.callButton}>
+              <Icon
+                family="Ionicons"
+                name="call"
+                size={20}
+                color={Colors.white}
+                onPress={handleCallDriver}
+              />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.callButton} onPress={() => { navigation.navigate('Chat', { driver: orderData }) }}>
-              <Icon family="Entypo" name="message" size={20} color={Colors.white} />
+            <TouchableOpacity
+              style={styles.callButton}
+              onPress={() => {
+                navigation.navigate('Chat', {driver: orderData});
+              }}>
+              <Icon
+                family="Entypo"
+                name="message"
+                size={20}
+                color={Colors.white}
+              />
             </TouchableOpacity>
             <TouchableOpacity style={styles.callButton}>
-              <Icon family="FontAwesome" name="whatsapp" size={20} color={Colors.white} onPress={handleWhatsapp} />
+              <Icon
+                family="FontAwesome"
+                name="whatsapp"
+                size={20}
+                color={Colors.white}
+                onPress={handleWhatsapp}
+              />
             </TouchableOpacity>
           </View>
         </OrderSection>
@@ -292,34 +385,34 @@ const OrderDetails = ({ route }) => {
 
         <CustomButton
           onPress={
-            deliveryStatus === 'pending'
+            deliveryStatus === STATUS.PENDING
               ? handleConfirmOrder
-              : deliveryStatus === 'confirmed'
-                ? handleStartDelivery
-                : deliveryStatus === 'inProgress'
-                  ? handleCompleteDelivery
-                  : () => { }
+              : deliveryStatus === STATUS.READY_FOR_DELIVERY
+              ? handleStartDelivery
+              : deliveryStatus === STATUS.IN_PROGRESS
+              ? handleCompleteDelivery
+              : () => {}
           }
           label={
-            deliveryStatus === 'pending'
+            deliveryStatus === STATUS.PENDING
               ? 'Confirm Order'
-              : deliveryStatus === 'confirmed'
-                ? 'Start Delivery'
-                : deliveryStatus === 'inProgress'
-                  ? 'Complete Delivery'
-                  : null
+              : deliveryStatus === STATUS.READY_FOR_DELIVERY
+              ? 'Start Delivery'
+              : deliveryStatus === STATUS.IN_PROGRESS
+              ? 'Complete Delivery'
+              : null
           }
           btnStyle={{
             width: '95%',
             borderRadius: scale(5),
             backgroundColor:
-              deliveryStatus === 'pending'
+              deliveryStatus === STATUS.PENDING
                 ? Colors?.verify
-                : deliveryStatus === 'confirmed'
-                  ? Colors?.btnColor
-                  : deliveryStatus === 'inProgress'
-                    ? Colors?.green
-                    : Colors?.gray,
+                : deliveryStatus === STATUS.READY_FOR_DELIVERY
+                ? Colors?.btnColor
+                : deliveryStatus === STATUS.IN_PROGRESS
+                ? Colors?.green
+                : Colors?.gray,
             alignSelf: 'center',
           }}
         />
@@ -335,7 +428,7 @@ const OrderDetails = ({ route }) => {
         visible={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         location={orderData.location}
-        coordinates={{ lat: orderData.lat, lng: orderData.lng }}
+        coordinates={{lat: orderData.lat, lng: orderData.lng}}
       />
     </AppSkeleton>
   );
@@ -344,7 +437,7 @@ const OrderDetails = ({ route }) => {
 export default OrderDetails;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.white },
+  container: {flex: 1, backgroundColor: Colors.white},
   header: {
     backgroundColor: Colors.white,
     width: '100%',
@@ -395,7 +488,7 @@ const styles = StyleSheet.create({
     color: Colors.orange,
     marginLeft: scale(5),
   },
-  customerInfo: { marginTop: verticalScale(5) },
+  customerInfo: {marginTop: verticalScale(5)},
   customerName: {
     fontSize: moderateScale(16),
     fontFamily: fonts.bold,
@@ -428,7 +521,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.greyV4,
   },
-  itemInfo: { flex: 1 },
+  itemInfo: {flex: 1},
   itemName: {
     fontSize: moderateScale(14),
     fontFamily: fonts.medium,
@@ -521,9 +614,9 @@ const styles = StyleSheet.create({
     color: Colors.grey,
     marginBottom: verticalScale(10),
   },
-  imagesList: { marginBottom: verticalScale(10) },
-  imageContainer: { marginRight: scale(10), position: 'relative' },
-  uploadedImage: { width: scale(80), height: scale(80), borderRadius: scale(8) },
+  imagesList: {marginBottom: verticalScale(10)},
+  imageContainer: {marginRight: scale(10), position: 'relative'},
+  uploadedImage: {width: scale(80), height: scale(80), borderRadius: scale(8)},
   removeImageButton: {
     position: 'absolute',
     top: 0,
