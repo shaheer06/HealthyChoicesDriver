@@ -1,8 +1,8 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 import Header from '../components/BacKHeader';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {orderCard} from '../assets/dummyData/dummyData';
 import {moderateScale, scale, verticalScale} from '../utils/helper';
 import Colors from '../assets/colors/Color';
@@ -11,6 +11,7 @@ import api from '../utils/apiUrl';
 import {useSelector} from 'react-redux';
 import PopUp from '../Popup/PopUp';
 import EmptyComponent from '../components/EmptyComponent';
+import Loader from '../components/Loader';
 
 const HistoryTab = ({onPress, item, isSelected, onLongPress, navigation}) => {
   // const { selected } = useSelector(state => state?.language);
@@ -135,45 +136,53 @@ const OneTime = () => {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    orderList();
-  }, []);
+  // useEffect(() => {
+  //   orderList();
+  // }, []);
+  useFocusEffect(
+    useCallback(() => {
+      orderList();
+    }, []),
+  );
 
   return (
-    <AppSkeleton disableScroll={true}>
-      <Header showText={true} text="One Time Orders" />
-      <FlatList
-        scrollEnabled={true}
-        data={orderData}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => item?._id}
-        style={{
-          padding: verticalScale(1),
-          marginTop: verticalScale(15),
-        }}
-        renderItem={({item, index}) => (
-          <HistoryTab
-            item={item}
-            onPress={() =>
-              selectionMode
-                ? handleSelect(item._id)
-                : navigation?.navigate('OrderDetails', {orderData: item})
-            }
-            onLongPress={() => handleSelect(item._id, true)}
-            isSelected={selected?.includes(item._id)}
-            navigation={navigation}
-          />
-        )}
-        ListEmptyComponent={() => {
-          return <EmptyComponent />;
-        }}
-        contentContainerStyle={{
-          paddingBottom:
-            selected.length > 0 ? verticalScale(90) : verticalScale(45),
-          gap: verticalScale(20),
-        }}
-      />
-    </AppSkeleton>
+    <>
+      <AppSkeleton disableScroll={true}>
+        <Header showText={true} text="One Time Orders" />
+        <FlatList
+          scrollEnabled={true}
+          data={orderData}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={item => item?._id}
+          style={{
+            padding: verticalScale(1),
+            marginTop: verticalScale(15),
+          }}
+          renderItem={({item, index}) => (
+            <HistoryTab
+              item={item}
+              onPress={() =>
+                selectionMode
+                  ? handleSelect(item._id)
+                  : navigation?.navigate('OrderDetails', {orderData: item})
+              }
+              onLongPress={() => handleSelect(item._id, true)}
+              isSelected={selected?.includes(item._id)}
+              navigation={navigation}
+            />
+          )}
+          ListEmptyComponent={() => {
+            return <EmptyComponent />;
+          }}
+          contentContainerStyle={{
+            paddingBottom:
+              selected.length > 0 ? verticalScale(90) : verticalScale(45),
+            gap: verticalScale(20),
+          }}
+        />
+      </AppSkeleton>
+      <Loader loading={loading} />
+    </>
   );
 };
 

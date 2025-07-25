@@ -1,51 +1,69 @@
-import { Button, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image } from 'react-native';
-import React, { useRef } from 'react';
+import {
+  Button,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 // import Map from '../components/Map';
 import OrderRequestModal from '../components/OrderRequestModal';
-import { useOrderRequest } from '../context/OrderRequestContext';
+import {useOrderRequest} from '../context/OrderRequestContext';
 import Colors from '../assets/colors/Color';
-import { scale, verticalScale } from '../utils/helper';
-import { fonts } from '../assets/fonts/Fonts';
+import {scale, verticalScale} from '../utils/helper';
+import {fonts} from '../assets/fonts/Fonts';
 import Header from '../components/BacKHeader';
-import { useNavigation } from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
+import api from '../utils/apiUrl';
+import PopUp from '../Popup/PopUp';
+import Loader from '../components/Loader';
 
 const Home = () => {
-  const { setOrderData } = useOrderRequest();
-  const mapRef = useRef(null);
+  const [orderData, setOrderData] = useState([]);
+  console.log(orderData, 'OrderData');
+  const [loading, setLoading] = useState(false);
+  const {userData} = useSelector(state => state?.user);
+  // const { setOrderData } = useOrderRequest();
+  // const mapRef = useRef(null);
   const navigation = useNavigation();
-  const simulateIncomingRequest = () => {
-    setOrderData({
-      customerName: 'John Doe',
-      customerAddress: '123 Main Street, Springfield',
-      location: {
-        latitude: 24.8754,
-        longitude: 67.0410,
-      },
-    });
-  };
+  // const simulateIncomingRequest = () => {
+  //   setOrderData({
+  //     customerName: 'John Doe',
+  //     customerAddress: '123 Main Street, Springfield',
+  //     location: {
+  //       latitude: 24.8754,
+  //       longitude: 67.0410,
+  //     },
+  //   });
+  // };
 
-  const handleAcceptOrder = (orderData) => {
-    console.log('Order accepted:', orderData);
-    // Here you would typically:
-    // 1. Send acceptance to backend
-    // 2. Update order status
-    // 3. Start navigation to customer
-    // 4. Update UI to show active delivery
-  };
+  // const handleAcceptOrder = (orderData) => {
+  //   console.log('Order accepted:', orderData);
+  //   // Here you would typically:
+  //   // 1. Send acceptance to backend
+  //   // 2. Update order status
+  //   // 3. Start navigation to customer
+  //   // 4. Update UI to show active delivery
+  // };
 
-  const handleRefreshLocation = () => {
-    if (mapRef.current) {
-      mapRef.current.refreshLocation();
-    }
-  };
+  // const handleRefreshLocation = () => {
+  //   if (mapRef.current) {
+  //     mapRef.current.refreshLocation();
+  //   }
+  // };
 
-  const DashboardCard = ({ title, value, subtitle, icon, color, onPress }) => (
-    <TouchableOpacity style={[styles.card, { borderLeftColor: color }]} onPress={onPress}>
+  const DashboardCard = ({title, value, subtitle, icon, color, onPress}) => (
+    <TouchableOpacity
+      style={[styles.card, {borderLeftColor: color}]}
+      onPress={onPress}>
       <View style={styles.cardContent}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardIcon}>{icon}</Text>
-          <Text style={[styles.cardValue, { color: color }]}>{value}</Text>
+          <Text style={[styles.cardValue, {color: color}]}>{value}</Text>
         </View>
         <Text style={styles.cardTitle}>{title}</Text>
         <Text style={styles.cardSubtitle}>{subtitle}</Text>
@@ -53,77 +71,113 @@ const Home = () => {
     </TouchableOpacity>
   );
 
+  const orderList = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `/api/storefront/driver-orders/orders/${userData?.data?._id}`,
+      );
+      // console.log(response?.data, 'Datatattaa');
+      setOrderData(response?.data);
+    } catch (error) {
+      console.error('There is an error', error);
+      PopUp.show('Error', 'error', 3000, 'There is an Error');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      orderList();
+    }, []),
+  );
+
   return (
-    <AppSkeleton>
-      <View style={{
-        backgroundColor: Colors?.orange,
-        bottom: verticalScale(19),
-        padding: scale(16),
-        width: '110%',
-        alignSelf: 'center',
-        borderBottomLeftRadius: scale(15),
-        borderBottomRightRadius: scale(15)
-      }}>
-
-        <Header text={'Dashboard'} showText={true} iconColor={Colors?.white} color={Colors?.white} type={3} />
-
-        <View style={styles.headerImageContainer}>
-          <Image
-            source={require('../assets/images/bgImg.png')}
-            style={styles.headerImage}
-            resizeMode="cover"
+    <>
+      <AppSkeleton disableScroll={true}>
+        <View
+          style={{
+            backgroundColor: Colors?.orange,
+            bottom: verticalScale(19),
+            padding: scale(16),
+            width: '110%',
+            alignSelf: 'center',
+            borderBottomLeftRadius: scale(15),
+            borderBottomRightRadius: scale(15),
+          }}>
+          <Header
+            text={'Dashboard'}
+            showText={true}
+            iconColor={Colors?.white}
+            color={Colors?.white}
+            type={3}
           />
-          <View style={styles.headerOverlay}>
-            <View style={styles.headerContent}>
-              <Image
-                source={require('../assets/images/package1.png')}
-                style={styles.headerIcon}
-                resizeMode="contain"
-              />
-              <Text style={styles.headerImageTitle}>Welcome</Text>
-              <Text style={styles.headerImageSubtitle}>Ready to deliver today?</Text>
+
+          <View style={styles.headerImageContainer}>
+            <Image
+              source={require('../assets/images/bgImg.png')}
+              style={styles.headerImage}
+              resizeMode="cover"
+            />
+            <View style={styles.headerOverlay}>
+              <View style={styles.headerContent}>
+                <Image
+                  source={require('../assets/images/package1.png')}
+                  style={styles.headerIcon}
+                  resizeMode="contain"
+                />
+                <Text style={styles.headerImageTitle}>Welcome</Text>
+                <Text style={styles.headerImageSubtitle}>
+                  Ready to deliver today?
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header Image Section */}
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}>
+          {/* Header Image Section */}
 
-        <View style={styles.cardRow}>
-          <DashboardCard
-            title="Order Delivered"
-            value="24"
-            subtitle="This week"
-            icon="📦"
-            color={Colors.verify}
-            onPress={() => console.log('Order Delivered pressed')}
-          />
-          <DashboardCard
-            title="Current Order"
-            value="3"
-            subtitle="Active deliveries"
-            icon="🚚"
-            color={Colors.orange}
-            onPress={() => navigation.navigate('BottomTabs', {
-              screen: 'Order'
-            })}
-          />
-        </View>
+          <View style={styles.cardRow}>
+            <DashboardCard
+              title="Order Delivered"
+              value={orderData?.todayOrdersCount}
+              subtitle="This week"
+              icon="📦"
+              color={Colors.verify}
+              // onPress={() => console.log('Order Delivered pressed')}
+            />
+            <DashboardCard
+              title="Current Order"
+              value={orderData?.totalDeliverdOrder}
+              subtitle="Active deliveries"
+              icon="🚚"
+              color={Colors.orange}
+              onPress={() =>
+                navigation.navigate('BottomTabs', {
+                  screen: 'Order',
+                })
+              }
+            />
+          </View>
 
-        <View style={styles.cardRow}>
-          <DashboardCard
-            title="Return Order"
-            value="1"
-            subtitle="Pending returns"
-            icon="↩️"
-            color={Colors.red}
-            onPress={() => console.log('Return Order pressed')}
-          />
-        </View>
-      </ScrollView>
+          <View style={styles.cardRow}>
+            <DashboardCard
+              title="Return Order"
+              value={orderData?.todayReturnOrdersCount}
+              subtitle="Pending returns"
+              icon="↩️"
+              color={Colors.red}
+              // onPress={() => console.log('Return Order pressed')}
+            />
+          </View>
+        </ScrollView>
 
-      <OrderRequestModal onAccept={handleAcceptOrder} />
-    </AppSkeleton>
+        {/* <OrderRequestModal onAccept={handleAcceptOrder} /> */}
+      </AppSkeleton>
+      <Loader loading={loading} />
+    </>
   );
 };
 
@@ -143,7 +197,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: scale(20),
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
   },
@@ -176,7 +230,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: scale(4),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.1,
     shadowRadius: 2.22,
   },
@@ -230,7 +284,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.1,
     shadowRadius: 2.22,
   },
@@ -263,7 +317,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
@@ -273,7 +327,7 @@ const styles = StyleSheet.create({
   headerImageContainer: {
     height: verticalScale(200),
     position: 'relative',
-    marginTop: verticalScale(5)
+    marginTop: verticalScale(5),
   },
   headerImage: {
     width: '100%',
