@@ -9,23 +9,25 @@ import {
   FlatList,
   Linking,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 
 import LocationModal from '../components/LocationModal';
 import OrderSection from '../components/OrderSection';
-import {moderateScale, scale, verticalScale} from '../utils/helper';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import {fonts} from '../assets/fonts/Fonts';
+import { fonts } from '../assets/fonts/Fonts';
 import Icon from '../assets/icon/Icon';
 import ImagePickerModal from '../components/ImagePickerModal';
 import Header from '../components/BacKHeader';
 import CustomButton from '../components/CustomButton';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import api from '../utils/apiUrl';
+import { updateOrderStatus } from '../services/order';
+import { useMutation } from '@tanstack/react-query';
 
-const OrderDetails = ({route}) => {
-  const {orderData} = route?.params || {};
+const OrderDetails = ({ route }) => {
+  const { orderData } = route?.params || {};
   // console.log(orderData?._id,
   //   "Order DAtaa"
   // )
@@ -46,9 +48,9 @@ const OrderDetails = ({route}) => {
     try {
       const response = await api.post(
         `/api/storefront/driver-orders/orders/${orderId}`,
-        {status},
+        { status },
       );
-      console.log("Status",status)
+      console.log("Status", status)
       return response?.data;
     } catch (error) {
       console.error('Error updating order status:', error?.response?.data);
@@ -63,12 +65,30 @@ const OrderDetails = ({route}) => {
     }
   }, []);
 
+  // const { mutate: updateStatus } = useMutation({
+  //   mutationFn: ({ orderId, status }) => updateOrderStatus(orderId, status),
+  //   onSuccess: () => {
+  //     setDeliveryStatus(STATUS.PENDING);
+  //     console.log('Order status updated successfully');
+  //   },
+  //   onError: () => {
+  //     Alert.alert('Error', 'Failed to set order as pending');
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   if (orderData?._id) {
+  //     updateStatus({ orderId: orderData._id, status: STATUS.PENDING });
+  //   }
+  // }, []);
+
+
   const handleConfirmOrder = () => {
     Alert.alert(
       'Confirm Order',
       'Are you sure you want to confirm this order for delivery?',
       [
-        {text: 'Cancel', style: 'cancel'},
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Confirm',
           onPress: async () => {
@@ -103,7 +123,7 @@ const OrderDetails = ({route}) => {
       'Complete Delivery',
       'Are you sure you want to mark this delivery as completed?',
       [
-        {text: 'Cancel', style: 'cancel'},
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Complete',
           onPress: async () => {
@@ -135,7 +155,7 @@ const OrderDetails = ({route}) => {
 
   const removeImage = index => {
     Alert.alert('Remove Image', 'Are you sure you want to remove this image?', [
-      {text: 'Cancel', style: 'cancel'},
+      { text: 'Cancel', style: 'cancel' },
       {
         text: 'Remove',
         style: 'destructive',
@@ -166,7 +186,7 @@ const OrderDetails = ({route}) => {
     return texts[status] || 'Unknown';
   };
 
-  const renderOrderItem = ({item}) => (
+  const renderOrderItem = ({ item }) => (
     <View style={styles.orderItem}>
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item?.title}</Text>
@@ -176,10 +196,10 @@ const OrderDetails = ({route}) => {
     </View>
   );
 
-  const renderUploadedImage = ({item, index}) => (
+  const renderUploadedImage = ({ item, index }) => (
     <View style={styles.imageContainer}>
       <Image
-        source={{uri: item}}
+        source={{ uri: item }}
         style={styles.uploadedImage}
         resizeMode="cover"
       />
@@ -228,7 +248,7 @@ const OrderDetails = ({route}) => {
           <View
             style={[
               styles.statusBadge,
-              {backgroundColor: getStatusColor(deliveryStatus)},
+              { backgroundColor: getStatusColor(deliveryStatus) },
             ]}>
             <Text style={styles.statusText}>
               {getStatusText(deliveryStatus)}
@@ -317,7 +337,7 @@ const OrderDetails = ({route}) => {
             <TouchableOpacity
               style={styles.callButton}
               onPress={() => {
-                navigation.navigate('Chat', {driver: orderData});
+                navigation.navigate('Chat', { driver: orderData });
               }}>
               <Icon
                 family="Entypo"
@@ -388,19 +408,19 @@ const OrderDetails = ({route}) => {
             deliveryStatus === STATUS.PENDING
               ? handleConfirmOrder
               : deliveryStatus === STATUS.READY_FOR_DELIVERY
-              ? handleStartDelivery
-              : deliveryStatus === STATUS.IN_PROGRESS
-              ? handleCompleteDelivery
-              : () => {}
+                ? handleStartDelivery
+                : deliveryStatus === STATUS.IN_PROGRESS
+                  ? handleCompleteDelivery
+                  : () => { }
           }
           label={
             deliveryStatus === STATUS.PENDING
               ? 'Confirm Order'
               : deliveryStatus === STATUS.READY_FOR_DELIVERY
-              ? 'Start Delivery'
-              : deliveryStatus === STATUS.IN_PROGRESS
-              ? 'Complete Delivery'
-              : null
+                ? 'Start Delivery'
+                : deliveryStatus === STATUS.IN_PROGRESS
+                  ? 'Complete Delivery'
+                  : null
           }
           btnStyle={{
             width: '95%',
@@ -409,10 +429,10 @@ const OrderDetails = ({route}) => {
               deliveryStatus === STATUS.PENDING
                 ? Colors?.verify
                 : deliveryStatus === STATUS.READY_FOR_DELIVERY
-                ? Colors?.btnColor
-                : deliveryStatus === STATUS.IN_PROGRESS
-                ? Colors?.green
-                : Colors?.gray,
+                  ? Colors?.btnColor
+                  : deliveryStatus === STATUS.IN_PROGRESS
+                    ? Colors?.green
+                    : Colors?.gray,
             alignSelf: 'center',
           }}
         />
@@ -428,7 +448,7 @@ const OrderDetails = ({route}) => {
         visible={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         location={orderData.location}
-        coordinates={{lat: orderData.lat, lng: orderData.lng}}
+        coordinates={{ lat: orderData.lat, lng: orderData.lng }}
       />
     </AppSkeleton>
   );
@@ -437,7 +457,7 @@ const OrderDetails = ({route}) => {
 export default OrderDetails;
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: Colors.white},
+  container: { flex: 1, backgroundColor: Colors.white },
   header: {
     backgroundColor: Colors.white,
     width: '100%',
@@ -488,7 +508,7 @@ const styles = StyleSheet.create({
     color: Colors.orange,
     marginLeft: scale(5),
   },
-  customerInfo: {marginTop: verticalScale(5)},
+  customerInfo: { marginTop: verticalScale(5) },
   customerName: {
     fontSize: moderateScale(16),
     fontFamily: fonts.bold,
@@ -521,7 +541,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.greyV4,
   },
-  itemInfo: {flex: 1},
+  itemInfo: { flex: 1 },
   itemName: {
     fontSize: moderateScale(14),
     fontFamily: fonts.medium,
@@ -614,9 +634,9 @@ const styles = StyleSheet.create({
     color: Colors.grey,
     marginBottom: verticalScale(10),
   },
-  imagesList: {marginBottom: verticalScale(10)},
-  imageContainer: {marginRight: scale(10), position: 'relative'},
-  uploadedImage: {width: scale(80), height: scale(80), borderRadius: scale(8)},
+  imagesList: { marginBottom: verticalScale(10) },
+  imageContainer: { marginRight: scale(10), position: 'relative' },
+  uploadedImage: { width: scale(80), height: scale(80), borderRadius: scale(8) },
   removeImageButton: {
     position: 'absolute',
     top: 0,

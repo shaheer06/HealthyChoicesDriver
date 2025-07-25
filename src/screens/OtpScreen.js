@@ -18,6 +18,8 @@ import api from '../utils/apiUrl';
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../store/slices/userSlice';
 import Header from '../components/Header';
+import { useMutation } from '@tanstack/react-query';
+import { login } from '../services/authService';
 
 const OtpScreen = () => {
   const [counter, setCounter] = useState(60);
@@ -28,7 +30,6 @@ const OtpScreen = () => {
   const { mobile, rememberMe } = route?.params;
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
   const handleChange = (text, index) => {
     const newOtp = [...otp];
     newOtp[index] = text;
@@ -71,49 +72,30 @@ const OtpScreen = () => {
     console.log('Resend code triggered');
   };
 
-  const handleLogin = async () => {
-    const otpCode = otp.join('').trim(); // this gives you "123456"
-
-    if (otpCode.length < 6) {
-      PopUp.show('Error', 'error', 3000, 'Please enter a complete 6-digit OTP');
-      return;
-    }
-    const usernamePayload = mobile ? { mobile } : null;
-    console.log('otpCode', otpCode);
-    console.log('mobile', usernamePayload);
-    console.log('rememberMe', rememberMe, 'rememberMe');
-    try {
-      setLoading(true);
-      const response = await api.post('/api/driver/login', {
-        username: usernamePayload, // comes from route.params
-        otp: otpCode,
-        rememberMe: rememberMe,
-      });
-
-      console.log('response', response?.data);
-      dispatch(setUserData(response?.data));
-      PopUp.show(
-        'Hello',
-        'success',
-        3000,
-        'Login Successful'
-      );
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'BottomTabs' }],
-      });
-    } catch (error) {
+  const loginMutation = useMutation({
+    mutationFn: () => login(mobile, otp.join('').trim(), rememberMe),
+    onSuccess: (data) => {
+      if (data?.data?.success) {
+        dispatch(setUserData(data?.data));
+        PopUp.show('Hello', 'success', 3000, 'Login Successful');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'BottomTabs' }],
+        });
+      }
+    },
+    onError: (error) => {
       if (error?.response?.status === 400) {
         console.log('error', error?.response?.data?.message);
         PopUp.show('Oops', 'error', 3000, error?.response?.data?.message);
       } else {
+        console.log('error', error?.response?.data);
         PopUp.show('Oops', 'error', 3000, 'Something went wrong');
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
+  const { mutate: login, isPending: isLoading } = loginMutation;
   // Auto-submit when all 6 digits are entered
   useEffect(() => {
     const otpCode = otp.join('').trim();
@@ -121,7 +103,7 @@ const OtpScreen = () => {
     if (otpCode.length === 6) {
       // Add a small delay to ensure state is fully updated
       setTimeout(() => {
-        handleLogin();
+        login();
       }, 50);
     }
   }, [otp]);
@@ -136,7 +118,7 @@ const OtpScreen = () => {
       <View style={styles.mainContainer}>
         {otp?.map((digit, index) => (
           <TextInput
-            editable={!loading}
+            editable={!isLoading}
             key={index}
             value={digit}
             onChangeText={text =>
@@ -177,16 +159,16 @@ const OtpScreen = () => {
           )}
         </View>
         <CustomButton
-          disabled={loading}
+          disabled={isLoading}
           label={
-            loading ? (
+            isLoading ? (
               <ActivityIndicator size={'small'} color={Colors?.white} />
             ) : (
               'Continue'
             )
           }
           btnStyle={{ alignSelf: 'center' }}
-          onPress={handleLogin}
+          onPress={() => login()}
         />
       </View>
     </AppSkeleton>

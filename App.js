@@ -24,7 +24,9 @@ import { persistor, store } from './src/store/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const Stack = createNativeStackNavigator();
+const queryClient = new QueryClient();
 
 export default function App() {
   const navRef = useNavigationContainerRef();
@@ -32,30 +34,32 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <OrderRequestProvider>
-            <SafeAreaProvider>
-              <NavigationContainer ref={navRef}>
-                <Stack.Navigator
-                  initialRouteName="SplashScreen"
-                  screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="LoginScreen" component={LoginScreen} />
-                  <Stack.Screen name="SplashScreen" component={SplashScreen} />
-                  <Stack.Screen name="MapScreen" component={MapScreen} />
-                  <Stack.Screen name="OrderDetails" component={OrderDetails} />
-                  <Stack.Screen name="ActivityLog" component={ActivityLog} />
-                  <Stack.Screen name="OrderHistory" component={OrderHistory} />
-                  <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
-                  <Stack.Screen name="Notification" component={Notification} />
-                  <Stack.Screen name="ChangeNumber" component={ChangeNumber} />
-                  <Stack.Screen name="BottomTabs" component={BottomTabs} />
-                  <Stack.Screen name="Chat" component={Chat} />
-                  <Stack.Screen name="OtpScreen" component={OtpScreen} />
-                </Stack.Navigator>
-              </NavigationContainer>
-            </SafeAreaProvider>
-          </OrderRequestProvider>
-        </PersistGate>
+        <QueryClientProvider client={queryClient}>
+          <PersistGate loading={null} persistor={persistor}>
+            <OrderRequestProvider>
+              <SafeAreaProvider>
+                <NavigationContainer ref={navRef}>
+                  <Stack.Navigator
+                    initialRouteName="SplashScreen"
+                    screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="LoginScreen" component={LoginScreen} />
+                    <Stack.Screen name="SplashScreen" component={SplashScreen} />
+                    <Stack.Screen name="MapScreen" component={MapScreen} />
+                    <Stack.Screen name="OrderDetails" component={OrderDetails} />
+                    <Stack.Screen name="ActivityLog" component={ActivityLog} />
+                    <Stack.Screen name="OrderHistory" component={OrderHistory} />
+                    <Stack.Screen name="ProfileDetail" component={ProfileDetail} />
+                    <Stack.Screen name="Notification" component={Notification} />
+                    <Stack.Screen name="ChangeNumber" component={ChangeNumber} />
+                    <Stack.Screen name="BottomTabs" component={BottomTabs} />
+                    <Stack.Screen name="Chat" component={Chat} />
+                    <Stack.Screen name="OtpScreen" component={OtpScreen} />
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </SafeAreaProvider>
+            </OrderRequestProvider>
+          </PersistGate>
+        </QueryClientProvider>
       </Provider>
       <Toast />
 

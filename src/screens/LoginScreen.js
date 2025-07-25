@@ -20,6 +20,8 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../utils/apiUrl';
 import PopUp from '../Popup/PopUp';
+import { useMutation } from '@tanstack/react-query';
+import { generateOtp } from '../services/authService';
 
 const { height } = Dimensions.get('window');
 
@@ -34,7 +36,6 @@ const LoginScreen = () => {
     dial_code: '+973',
     code: 'BH',
   });
-  const [loading, setLoading] = useState(false);
   const handlePhoneValidationChange = (isValid) => {
     setIsPhoneValid(isValid);
     if (phoneError && isValid) {
@@ -48,54 +49,30 @@ const LoginScreen = () => {
     return `${countryCode}${phoneNumber}`;
   };
 
-  const loginUser = async () => {
-    console.log('loginUser');
+  const fullPhoneNumber = getFullPhoneNumber();
 
-    if (!phoneNumber.trim()) {
-      setPhoneError('Phone number is required*');
-      return;
-    } else {
-      setPhoneError('');
-    }
-
-    if (phoneNumber.trim() && isPhoneValid === false) {
-      setPhoneError('Please enter a valid phone number');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const fullPhoneNumber = getFullPhoneNumber();
-
-      try {
-        const response = await api.post(
-          '/api/driver/generateOtp',
-          { username: fullPhoneNumber },
-          false,
-        );
-        if (response?.data?.success) {
-          navigation?.navigate('OtpScreen', {
-            mobile: fullPhoneNumber,
-            rememberMe: false,
-          });
-        }
-        PopUp.show('Hello', 'success', 3000, 'OTP has sent to you!!!');
-        console.log('response', response);
-      } catch (error) {
-        if (error?.response?.status === 400) {
-          console.log('error', error?.response?.data?.message);
-          PopUp.show('Oops', 'error', 3000, error?.response?.data?.message);
-        } else {
-          PopUp.show('Oops', 'error', 3000, 'Something went wrong');
-        }
+  const generateOtpMutation = useMutation({
+    mutationFn: () => generateOtp(fullPhoneNumber),
+    onSuccess: (data) => {
+      if (data?.data?.success) {
+        navigation?.navigate('OtpScreen', {
+          mobile: fullPhoneNumber,
+          rememberMe: false,
+        });
       }
+      PopUp.show('Hello', 'success', 3000, 'OTP has sent to you!!!');
+    },
+    onError: (error) => {
+      if (error?.response?.status === 400) {
+        console.log('error', error?.response?.data?.message);
+        PopUp.show('Oops', 'error', 3000, error?.response?.data?.message);
+      } else {
+        PopUp.show('Oops', 'error', 3000, 'Something went wrong');
+      }
+    },
+  });
 
-    } catch (error) {
-      PopUp.show('Oops', 'error', 3000, 'Phone number not found');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { mutate: generateOtp, isPending: isLoading } = generateOtpMutation;
 
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
@@ -143,7 +120,7 @@ const LoginScreen = () => {
           />
           {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
           <CustomButton
-            label={loading ? <ActivityIndicator size="small" color={Colors?.white} />
+            label={isLoading ? <ActivityIndicator size="small" color={Colors?.white} />
               : 'Start Driving -->'}
             btnStyle={{
               backgroundColor: Colors?.black,
@@ -157,9 +134,9 @@ const LoginScreen = () => {
                 color: !phoneNumber.trim() ? Colors?.black : Colors?.white,
               },
             ]}
-            onPress={loginUser}
-            isLoading={loading}
-            disabled={loading || !phoneNumber.trim()}
+            onPress={() => generateOtp()}
+            isLoading={isLoading}
+            disabled={isLoading || !phoneNumber.trim()}
           />
         </View>
         <View

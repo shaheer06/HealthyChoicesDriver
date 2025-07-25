@@ -7,63 +7,36 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 // import Map from '../components/Map';
 import OrderRequestModal from '../components/OrderRequestModal';
-import {useOrderRequest} from '../context/OrderRequestContext';
+import { useOrderRequest } from '../context/OrderRequestContext';
 import Colors from '../assets/colors/Color';
-import {scale, verticalScale} from '../utils/helper';
-import {fonts} from '../assets/fonts/Fonts';
+import { scale, verticalScale } from '../utils/helper';
+import { fonts } from '../assets/fonts/Fonts';
 import Header from '../components/BacKHeader';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import api from '../utils/apiUrl';
 import PopUp from '../Popup/PopUp';
 import Loader from '../components/Loader';
+import { useQuery } from '@tanstack/react-query';
+import { getOrderList } from '../services/order';
 
 const Home = () => {
-  const [orderData, setOrderData] = useState([]);
-  console.log(orderData, 'OrderData');
   const [loading, setLoading] = useState(false);
-  const {userData} = useSelector(state => state?.user);
-  // const { setOrderData } = useOrderRequest();
-  // const mapRef = useRef(null);
+  const { userData } = useSelector(state => state?.user);
   const navigation = useNavigation();
-  // const simulateIncomingRequest = () => {
-  //   setOrderData({
-  //     customerName: 'John Doe',
-  //     customerAddress: '123 Main Street, Springfield',
-  //     location: {
-  //       latitude: 24.8754,
-  //       longitude: 67.0410,
-  //     },
-  //   });
-  // };
 
-  // const handleAcceptOrder = (orderData) => {
-  //   console.log('Order accepted:', orderData);
-  //   // Here you would typically:
-  //   // 1. Send acceptance to backend
-  //   // 2. Update order status
-  //   // 3. Start navigation to customer
-  //   // 4. Update UI to show active delivery
-  // };
-
-  // const handleRefreshLocation = () => {
-  //   if (mapRef.current) {
-  //     mapRef.current.refreshLocation();
-  //   }
-  // };
-
-  const DashboardCard = ({title, value, subtitle, icon, color, onPress}) => (
+  const DashboardCard = ({ title, value, subtitle, icon, color, onPress }) => (
     <TouchableOpacity
-      style={[styles.card, {borderLeftColor: color}]}
+      style={[styles.card, { borderLeftColor: color }]}
       onPress={onPress}>
       <View style={styles.cardContent}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardIcon}>{icon}</Text>
-          <Text style={[styles.cardValue, {color: color}]}>{value}</Text>
+          <Text style={[styles.cardValue, { color: color }]}>{value}</Text>
         </View>
         <Text style={styles.cardTitle}>{title}</Text>
         <Text style={styles.cardSubtitle}>{subtitle}</Text>
@@ -71,25 +44,29 @@ const Home = () => {
     </TouchableOpacity>
   );
 
-  const orderList = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get(
-        `/api/storefront/driver-orders/orders/${userData?.data?._id}`,
-      );
-      // console.log(response?.data, 'Datatattaa');
-      setOrderData(response?.data);
-    } catch (error) {
-      console.error('There is an error', error);
+  const { data: orderData, isLoading: isLoadingOrderList, refetch } = useQuery({
+    queryKey: ['orderList', userData?.data?._id],
+    queryFn: () => getOrderList(userData?.data?._id),
+    enabled: !!userData?.data?._id,
+    staleTime: 2 * 60 * 1000,
+    cacheTime: 5 * 60 * 1000,
+    onSuccess: (data) => {
+      console.log(data, 'Dataaaaaa');
+    },
+    onError: (error) => {
+      console.log(error, 'Error');
       PopUp.show('Error', 'error', 3000, 'There is an Error');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  })
+
+
+  console.log(orderData, 'OrderData');
   useFocusEffect(
     useCallback(() => {
-      orderList();
-    }, []),
+      if (userData?.data?._id) {
+        refetch();
+      }
+    }, [refetch]),
   );
 
   return (
@@ -146,7 +123,7 @@ const Home = () => {
               subtitle="This week"
               icon="📦"
               color={Colors.verify}
-              // onPress={() => console.log('Order Delivered pressed')}
+            // onPress={() => console.log('Order Delivered pressed')}
             />
             <DashboardCard
               title="Current Order"
@@ -169,14 +146,14 @@ const Home = () => {
               subtitle="Pending returns"
               icon="↩️"
               color={Colors.red}
-              // onPress={() => console.log('Return Order pressed')}
+            // onPress={() => console.log('Return Order pressed')}
             />
           </View>
         </ScrollView>
 
         {/* <OrderRequestModal onAccept={handleAcceptOrder} /> */}
       </AppSkeleton>
-      <Loader loading={loading} />
+      <Loader loading={isLoadingOrderList} />
     </>
   );
 };
@@ -197,7 +174,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: scale(20),
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
   },
@@ -230,7 +207,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: scale(4),
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2.22,
   },
@@ -284,7 +261,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2.22,
   },
@@ -317,7 +294,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
