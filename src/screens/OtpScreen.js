@@ -82,6 +82,8 @@ const OtpScreen = () => {
           index: 0,
           routes: [{ name: 'BottomTabs' }],
         });
+      }else{
+        PopUp.show('Error', 'error', 3000, 'Invalid OTP');
       }
     },
     onError: (error) => {
@@ -95,7 +97,7 @@ const OtpScreen = () => {
     },
   });
 
-  const { mutate: login, isPending: isLoading } = loginMutation;
+  const { mutate: loginMutate, isPending: isLoading } = loginMutation;
   // Auto-submit when all 6 digits are entered
   useEffect(() => {
     const otpCode = otp.join('').trim();
@@ -168,7 +170,7 @@ const OtpScreen = () => {
             )
           }
           btnStyle={{ alignSelf: 'center' }}
-          onPress={() => login()}
+          onPress={() => loginMutate()}
         />
       </View>
     </AppSkeleton>

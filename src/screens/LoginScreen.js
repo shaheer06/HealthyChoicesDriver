@@ -59,8 +59,11 @@ const LoginScreen = () => {
           mobile: fullPhoneNumber,
           rememberMe: false,
         });
+        PopUp.show('Hello', 'success', 3000, 'OTP has sent to you!!!');
       }
-      PopUp.show('Hello', 'success', 3000, 'OTP has sent to you!!!');
+      else{
+        PopUp.show('Oops', 'error', 3000, data?.data?.message);
+      }
     },
     onError: (error) => {
       if (error?.response?.status === 400) {
@@ -72,7 +75,8 @@ const LoginScreen = () => {
     },
   });
 
-  const { mutate: generateOtp, isPending: isLoading } = generateOtpMutation;
+  const { mutate: generateOtpMutate, isPending: isLoading } = generateOtpMutation;
+  console.log(generateOtpMutate,"login screennnn")
 
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
@@ -134,7 +138,7 @@ const LoginScreen = () => {
                 color: !phoneNumber.trim() ? Colors?.black : Colors?.white,
               },
             ]}
-            onPress={() => generateOtp()}
+            onPress={() => generateOtpMutate()}
             isLoading={isLoading}
             disabled={isLoading || !phoneNumber.trim()}
           />

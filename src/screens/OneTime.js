@@ -1,21 +1,21 @@
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 import Header from '../components/BacKHeader';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { orderCard } from '../assets/dummyData/dummyData';
-import { moderateScale, scale, verticalScale } from '../utils/helper';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {orderCard} from '../assets/dummyData/dummyData';
+import {moderateScale, scale, verticalScale} from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import { fonts } from '../assets/fonts/Fonts';
+import {fonts} from '../assets/fonts/Fonts';
 import api from '../utils/apiUrl';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import PopUp from '../Popup/PopUp';
 import EmptyComponent from '../components/EmptyComponent';
 import Loader from '../components/Loader';
-import { useQuery } from '@tanstack/react-query';
-import { getOrderList } from '../services/order';
+import {useQuery} from '@tanstack/react-query';
+import {getOrderList} from '../services/order';
 
-const HistoryTab = ({ onPress, item, isSelected, onLongPress, navigation }) => {
+const HistoryTab = ({onPress, item, isSelected, onLongPress, navigation}) => {
   // const { selected } = useSelector(state => state?.language);
   const fullAddress = [
     item?.customerId?.address?.home?.flat_house_no,
@@ -34,13 +34,13 @@ const HistoryTab = ({ onPress, item, isSelected, onLongPress, navigation }) => {
         style={[
           styles.card,
           isSelected &&
-          {
-            // backgroundColor: 'rgba(55, 160, 0, 0.1)', // light orange with opacity
-            // borderColor: Colors.orange,
-            // borderWidth: 1,
-            // borderLeftWidth: isSelected ? 6 : 4,
-            // borderLeftColor: isSelected ? Colors.orange : Colors.greyV2,
-          },
+            {
+              // backgroundColor: 'rgba(55, 160, 0, 0.1)', // light orange with opacity
+              // borderColor: Colors.orange,
+              // borderWidth: 1,
+              // borderLeftWidth: isSelected ? 6 : 4,
+              // borderLeftColor: isSelected ? Colors.orange : Colors.greyV2,
+            },
         ]}
         onPress={onPress}>
         <Text style={styles?.order}>
@@ -57,7 +57,7 @@ const HistoryTab = ({ onPress, item, isSelected, onLongPress, navigation }) => {
           Contact: <Text style={styles?.type}>{item?.customerId?.mobile}</Text>
         </Text>
         <Text
-          onPress={() => navigation?.navigate('MapScreen', { orderData: item })}
+          onPress={() => navigation?.navigate('MapScreen', {orderData: item})}
           style={styles?.map}>
           View Map
         </Text>
@@ -77,7 +77,7 @@ const OneTime = () => {
   const navigation = useNavigation();
   console.log(orderData, 'OrderData');
   // const [loading, setLoading] = useState(false);
-  const { userData } = useSelector(state => state?.user);
+  const {userData} = useSelector(state => state?.user);
   // console.log("User Data",userData?.data?._id)
 
   // const handleCheck = () => {
@@ -122,20 +122,24 @@ const OneTime = () => {
     });
   };
 
-  const { data: orderData, isLoading: isLoadingOrders, refetch } = useQuery({
+  const {
+    data: orderData,
+    isLoading: isLoadingOrders,
+    refetch,
+  } = useQuery({
     queryKey: ['orderList', userData?.data?._id],
     queryFn: () => getOrderList(userData?.data?._id),
     enabled: !!userData?.data?._id,
     staleTime: 2 * 60 * 1000,
     cacheTime: 5 * 60 * 1000,
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log(data, 'Dataaaaaa');
     },
-    onError: (error) => {
+    onError: error => {
       console.log(error, 'Error');
       PopUp.show('Error', 'error', 3000, 'There is an Error');
     },
-  })
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -158,13 +162,15 @@ const OneTime = () => {
             padding: verticalScale(1),
             marginTop: verticalScale(15),
           }}
-          renderItem={({ item, index }) => (
+          renderItem={({item, index}) => (
             <HistoryTab
               item={item}
               onPress={() =>
                 selectionMode
                   ? handleSelect(item?.data?._id)
-                  : navigation?.navigate('OrderDetails', { orderData: item?.data })
+                  : navigation?.navigate('OrderDetails', {
+                      orderData: item,
+                    })
               }
               onLongPress={() => handleSelect(item?.data?._id, true)}
               isSelected={selected?.includes(item?.data?._id)}
@@ -198,7 +204,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: scale(4),
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: {width: 0, height: 3},
     shadowOpacity: 0.3,
     shadowRadius: 2,
     borderLeftColor: Colors?.orange,

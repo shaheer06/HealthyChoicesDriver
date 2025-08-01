@@ -1,20 +1,22 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 import CustomInput from '../components/CustomInput';
-import { moderateScale, scale, verticalScale } from '../utils/helper';
+import {moderateScale, scale, verticalScale} from '../utils/helper';
 import Header from '../components/BacKHeader';
 import CustomButton from '../components/CustomButton';
-import { useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
 import Colors from '../assets/colors/Color';
 import PopUp from '../Popup/PopUp';
-import { updateUserProfile } from '../utils/updateUserProfile';
-import { setUserData } from '../store/slices/userSlice';
+import {updateUserProfile} from '../utils/updateUserProfile';
+import {setUserData} from '../store/slices/userSlice';
 
 const ProfileDetail = () => {
   const navigation = useNavigation();
-  const { userData } = useSelector(state => state?.user);
+  const {userData} = useSelector(state => state?.user);
+  console.log(userData);
+
   const [name, setName] = useState(userData?.data?.name);
   const [mobile, setMobile] = useState(userData?.data?.mobile);
   const [email, setEmail] = useState(userData?.data?.email);
@@ -30,11 +32,15 @@ const ProfileDetail = () => {
     try {
       const response = await updateUserProfile(userData?.data?._id, payload);
       console.log(response, 'response');
-      dispatch(setUserData(response?.data));
-      PopUp.show('Success', 'success', 4000, 'Profile updated successfully');
-      setTimeout(() => {
-        navigation.goBack();
-      }, 1000);
+      if (response?.data?.message === 'No changed was detected') {
+        PopUp.show('Success', 'success', 4000, 'No changed was detected');
+      } else {
+        dispatch(setUserData(response?.data));
+        PopUp.show('Success', 'success', 4000, 'Profile updated successfully');
+        setTimeout(() => {
+          navigation.goBack();
+        }, 1000);
+      }
     } catch (error) {
       console.log(error, 'profile error');
       PopUp.show('Error', 'error', 4000, 'Failed to update profile');
@@ -49,23 +55,29 @@ const ProfileDetail = () => {
       <View style={styles?.container}>
         <CustomInput
           title={'Name'}
-          titleStyle={{ fontSize: moderateScale(14), color: Colors?.black }}
+          titleStyle={{fontSize: moderateScale(14), color: Colors?.black}}
           placeholder={'John Doe'}
           value={name}
-          style={{ width: '48.5%' }}
+          style={{width: '48.5%'}}
           onChangeText={setName}
         />
         <CustomInput
           title={'Mobile Number'}
-          titleStyle={{ fontSize: moderateScale(14), color: Colors?.black }}
+          titleStyle={{fontSize: moderateScale(14), color: Colors?.black}}
           placeholder={'97312345678'}
           value={mobile}
-          style={{ width: '48.5%' }}
+          style={{width: '48.5%'}}
           onChangeText={setMobile}
         />
       </View>
       <CustomButton
-        label={isLoading ? <ActivityIndicator size="small" color={Colors.white} /> : 'Update Profile'}
+        label={
+          isLoading ? (
+            <ActivityIndicator size="small" color={Colors.white} />
+          ) : (
+            'Update Profile'
+          )
+        }
         btnStyle={{
           alignSelf: 'center',
           width: '100%',
