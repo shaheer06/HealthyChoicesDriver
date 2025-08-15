@@ -37,6 +37,8 @@
 	<string>We use your location always to provide better tracking.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app requires access to your location to display your position on the map.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to provide continuous tracking and improve delivery accuracy.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -89,6 +91,13 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+    	<string>UIInterfaceOrientationPortraitUpsideDown</string>
+    	<string>UIInterfaceOrientationLandscapeLeft</string>
+    	<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

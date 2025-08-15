@@ -22,3 +22,13 @@ export const updateOrderStatus = async (orderId, status) => {
     throw error; // Important for handling error in caller
   }
 };
+
+export const activityLog = async driverId => {
+  try {
+    const response = await api.get(`/api/storefront/driver/activities/${driverId}`);
+    return response?.data;
+  } catch (error) {
+    console.error('Error fetching activity log:', error?.response?.data);
+    throw error; // Important for handling error in caller
+  }
+};

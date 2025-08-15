@@ -1,46 +1,96 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 import Header from '../components/BacKHeader';
 import moment from 'moment';
-import { moderateScale, scale, verticalScale } from '../utils/helper';
+import {moderateScale, scale, verticalScale} from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import { fonts } from '../assets/fonts/Fonts';
-import { mealData } from '../assets/dummyData/dummyData';
+import {fonts} from '../assets/fonts/Fonts';
+import {mealData} from '../assets/dummyData/dummyData';
+import {useQuery} from '@tanstack/react-query';
+import {activityLog} from '../services/order';
+import {useSelector} from 'react-redux';
+import PopUp from '../Popup/PopUp';
+import api from '../utils/apiUrl';
+import Loader from '../components/Loader';
 
-const ActivityBox = ({ item }) => {
+const ActivityBox = ({item}) => {
   return (
     <View style={styles?.container}>
-      <Text style={styles?.meal}>{item?.meal}</Text>
-      <Text style={styles?.dish}>{item?.dish}</Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-        <Text style={styles?.name}>{item?.name}</Text>
-        <Text style={styles?.date}>{moment(item?.date).format('LLLL')}</Text>
-      </View>
+      <Text style={styles?.meal}>{item?.activity}</Text>
+      <Text style={styles?.dish}>{item?.description}</Text>
+
+      <Text style={styles?.date}>{moment(item?.createdAt).format('LLLL')}</Text>
     </View>
   );
 };
 
 const ActivityLog = () => {
+  const {userData} = useSelector(state => state?.user);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  // const {
+  //   data: activityLog,
+  //   isLoading: isLoading,
+  //   refetch,
+  // }
+  // = useQuery({
+  //   queryKey: ['orderList', userData?.data?._id],
+  //   queryFn: () => activityLog(userData?.data?._id),
+  //   enabled: !!userData?.data?._id,
+  //   staleTime: 2 * 60 * 1000,
+  //   cacheTime: 5 * 60 * 1000,
+  //   onSuccess: data => {
+  //     console.log(data, 'Dataaaaaa');
+  //   },
+  //   onError: error => {
+  //     console.log(error, 'Error');
+  //     PopUp.show('Error', 'error', 3000, 'There is an Error');
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   console.log(activityLog,"hgfvvjmknbnm,")
+  //     refetch();
+  // }, [refetch]);
+
+  const activityLog = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(
+        `/api/storefront/driver/activities/${userData?.data?._id}`,
+      );
+      setData(response?.data?.data);
+    } catch (error) {
+      console.log(error, 'Error');
+      PopUp.show('Error', 'error', 3000, 'There is an Error');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    activityLog();
+  }, []);
   return (
-    <AppSkeleton disableScroll={true}>
-      <Header showText={true} text="Activity Log" />
-      <FlatList
-        style={{ marginTop: verticalScale(10) }}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: verticalScale(10), paddingBottom: verticalScale(20) }}
-        data={mealData}
-        keyExtractor={item => item?._id}
-        renderItem={({ item }) => {
-          return <ActivityBox item={item} />;
-        }}
-      />
-    </AppSkeleton>
+    <>
+      <AppSkeleton disableScroll={true}>
+        <Header showText={true} text="Activity Log" />
+        <FlatList
+          style={{marginTop: verticalScale(10)}}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            gap: verticalScale(10),
+            paddingBottom: verticalScale(20),
+          }}
+          data={data}
+          keyExtractor={item => item?._id}
+          renderItem={({item}) => {
+            return <ActivityBox item={item} />;
+          }}
+        />
+      </AppSkeleton>
+      <Loader loading={loading} />
+    </>
   );
 };
 
@@ -59,7 +109,7 @@ const styles = StyleSheet.create({
   meal: {
     fontFamily: fonts?.bold,
     color: Colors?.black,
-    fontSize: moderateScale(18),
+    fontSize: moderateScale(16),
   },
   dish: {
     fontFamily: fonts?.robotoMedium,
@@ -75,5 +125,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts?.bold,
     color: Colors?.black,
     fontSize: moderateScale(12),
+    textAlign: 'right',
+    width: '100%',
   },
 });
