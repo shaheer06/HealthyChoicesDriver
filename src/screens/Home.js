@@ -67,6 +67,7 @@ const Home = () => {
     }, [refetch]),
   );
 
+  console.log(orderData, 'Order Data');
   return (
     <>
       <AppSkeleton disableScroll={true}>
@@ -117,7 +118,7 @@ const Home = () => {
           <View style={styles.cardRow}>
             <DashboardCard
               title="Order Delivered"
-              value={orderData?.todayOrdersCount}
+              value={orderData?.totalDeliverdOrder}
               subtitle="This week"
               icon="📦"
               color={Colors.verify}
@@ -125,13 +126,16 @@ const Home = () => {
             />
             <DashboardCard
               title="Current Order"
-              value={orderData?.totalDeliverdOrder}
+              value={orderData?.todayOrdersCount}
               subtitle="Active deliveries"
               icon="🚚"
               color={Colors.orange}
               onPress={() =>
                 navigation.navigate('BottomTabs', {
                   screen: 'Order',
+                  params: {
+                    order: orderData,
+                  },
                 })
               }
             />

@@ -1,12 +1,16 @@
-import api from '../utils/apiUrl';
+  import api from '../utils/apiUrl';
 
 export const getOrderList = async userId => {
-  console.log(userId, 'UserId');
-  const response = await api.get(
-    `/api/storefront/driver-orders/orders/${userId}`,
-  );
-  console.log(response, 'Response');
-  return response.data;
+  try {
+    const response = await api.get(
+      `/api/storefront/driver-orders/orders/${userId}`,
+    );
+    console.log(response, 'Response');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching order list:', error?.response?.data);
+    throw error; // Important for handling error in caller
+  }
 };
 
 export const updateOrderStatus = async (orderId, status) => {

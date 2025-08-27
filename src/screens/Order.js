@@ -9,21 +9,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import AppSkeleton from '../components/AppSkeleton';
-import {moderateScale, scale, verticalScale} from '../utils/helper';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
-import {fonts} from '../assets/fonts/Fonts';
-import {orderCard} from '../assets/dummyData/dummyData';
-import {useNavigation} from '@react-navigation/native';
+import { fonts } from '../assets/fonts/Fonts';
+import { orderCard } from '../assets/dummyData/dummyData';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from '../assets/icon/Icon';
 import CustomButton from '../components/CustomButton';
 
-const {width, height} = Dimensions.get('window');
-const TAB_WIDTH = (width * 0.916) / 2;
+const { width, height } = Dimensions.get('window');
 
-const HistoryTab = ({onPress, item, isSelected, onLongPress, navigation}) => {
-  // const { selected } = useSelector(state => state?.language);
+const HistoryTab = ({ onPress, item, isSelected, onLongPress, navigation }) => {
 
   return (
     <View style={[styles.cardWrapper, isSelected && styles.selectedBackground]}>
@@ -31,35 +29,34 @@ const HistoryTab = ({onPress, item, isSelected, onLongPress, navigation}) => {
         onLongPress={onLongPress}
         style={[
           styles.card,
-          isSelected &&
-            {
-              // backgroundColor: 'rgba(55, 160, 0, 0.1)', // light orange with opacity
-              // borderColor: Colors.orange,
-              // borderWidth: 1,
-              // borderLeftWidth: isSelected ? 6 : 4,
-              // borderLeftColor: isSelected ? Colors.orange : Colors.greyV2,
-            },
+          isSelected
         ]}
         onPress={onPress}>
         <Text style={styles?.order}>
-          Order No# <Text style={styles?.orderNumber}>{item?.orderNumber}</Text>
+          Order No# <Text style={styles?.orderNumber}>{item?.orderNo}</Text>
         </Text>
         <Text style={styles?.customer}>
-          Customer Name: <Text style={styles?.name}>{item?.name}</Text>
+          Customer Name: <Text style={styles?.name}>{item?.customerId?.name}</Text>
         </Text>
         <Text style={styles?.customer}>
-          Location: <Text style={styles?.location}>{item?.location}</Text>
+          Location:{" "}
+          <Text style={styles?.location}>
+            {item?.customerId?.address?.home?.road_building},{" "}
+            {item?.customerId?.address?.home?.flat_house_no},{" "}
+            {item?.customerId?.address?.home?.governorateId?.name},{" "}
+            {item?.customerId?.address?.home?.cityId?.name},{" "}
+            {item?.customerId?.address?.home?.blockId?.name}
+          </Text>
         </Text>
         <Text style={styles?.customer}>
-          Type: <Text style={styles?.type}>{item?.type}</Text>
+          Type: <Text style={styles?.type}>{item?.orderType}</Text>
         </Text>
         <Text
-          onPress={() => navigation?.navigate('MapScreen', {orderData: item})}
+          onPress={() => navigation?.navigate('MapScreen', { orderData: item })}
           style={styles?.map}>
           View Map
         </Text>
       </TouchableOpacity>
-      {/* <View style={styles?.separator} /> */}
     </View>
   );
 };
@@ -74,6 +71,9 @@ const Order = () => {
   const [selectionMode2, setSelectionMode2] = useState(false);
   const [check2, setCheck2] = useState(false);
   const navigation = useNavigation();
+  const route = useRoute();
+  const { order } = route?.params;
+  console.log(order, 'Order');
 
   const handleCheck = () => {
     setCheck(prev => {
@@ -89,6 +89,24 @@ const Order = () => {
       return next;
     });
   };
+
+  const getDriverShifts = () => {
+    const shifts = new Set();
+  
+    // If order.driverShift is an array of objects
+    order?.driverShift?.forEach(shift => {
+      if (shift?.name) {
+        shifts.add(shift.name);
+      }
+    });
+  
+    // Return unique names or default values
+    return shifts.size > 0 ? Array.from(shifts) : ['Morning', 'Evening'];
+  };
+  
+
+  const driverShifts = getDriverShifts();
+  const TAB_WIDTH = (width * 0.916) / driverShifts.length;
 
   const handleCheck2 = () => {
     setCheck2(prev => {
@@ -223,7 +241,7 @@ const Order = () => {
                           },
                         },
                       ],
-                      {cancelable: true},
+                      { cancelable: true },
                     );
                   }}
                 />
@@ -231,21 +249,21 @@ const Order = () => {
             )}
             <FlatList
               scrollEnabled={true}
-              data={orderCard}
+              data={order?.data}
               showsVerticalScrollIndicator={false}
               keyExtractor={item => item?._id}
               style={{
                 padding: verticalScale(1),
                 marginTop: verticalScale(10),
               }}
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <HistoryTab
                   item={item}
                   onPress={() => {
                     if (selectionMode) {
                       handleSelect(item._id);
                     } else {
-                      navigation?.navigate('OrderDetails', {orderData: item});
+                      navigation?.navigate('OrderDetails', { orderData: item, from: 'Order' });
                     }
                   }}
                   onLongPress={() => handleSelect(item._id, true)}
@@ -315,7 +333,7 @@ const Order = () => {
                           },
                         },
                       ],
-                      {cancelable: true},
+                      { cancelable: true },
                     );
                   }}
                 />
@@ -326,8 +344,8 @@ const Order = () => {
               data={orderCard.slice(0, 4)}
               showsVerticalScrollIndicator={false}
               keyExtractor={item => item?._id}
-              style={{padding: verticalScale(1), marginTop: verticalScale(10)}}
-              renderItem={({item, index}) => (
+              style={{ padding: verticalScale(1), marginTop: verticalScale(10) }}
+              renderItem={({ item, index }) => (
                 <HistoryTab
                   item={item}
                   onPress={
@@ -354,9 +372,9 @@ const Order = () => {
     <AppSkeleton disableScroll={true}>
       {/* <View style={{flex:1}} > */}
       <View style={styles?.tabRow}>
-        {['Morning', 'Evening'].map((tab, index) => (
+        {driverShifts.map((tab, index) => (
           <TouchableOpacity
-            style={styles?.tab}
+            style={[styles?.tab, { width: TAB_WIDTH }]}
             key={index}
             onPress={() => handlePress(index)}>
             <Text
@@ -369,7 +387,7 @@ const Order = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <Animated.View style={[styles?.indicator, {transform: [{translateX}]}]} />
+      <Animated.View style={[styles?.indicator, { width: TAB_WIDTH, transform: [{ translateX }] }]} />
 
       <View style={styles?.tabContainer}>{renderContent()}</View>
       {/* </View> */}
@@ -399,7 +417,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tab: {
-    width: TAB_WIDTH,
+    // width: TAB_WIDTH,
     alignItems: 'center',
     paddingVertical: verticalScale(12),
   },
@@ -413,7 +431,7 @@ const styles = StyleSheet.create({
   },
   indicator: {
     height: moderateScale(3),
-    width: TAB_WIDTH,
+    // width: TAB_WIDTH,
     backgroundColor: Colors?.orange,
   },
   tabContainer: {
@@ -430,7 +448,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: scale(4),
     elevation: 4,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     borderLeftColor: Colors?.orange,
