@@ -241,10 +241,13 @@ const Order = () => {
               renderItem={({item, index}) => (
                 <HistoryTab
                   item={item}
-                  onPress={
-                    () => (selectionMode ? handleSelect(item._id) : null)
-                    // navigation?.navigate('OrderDetails', {orderData: item})
-                  }
+                  onPress={() => {
+                    if (selectionMode) {
+                      handleSelect(item._id);
+                    } else {
+                      navigation?.navigate('OrderDetails', {orderData: item});
+                    }
+                  }}
                   onLongPress={() => handleSelect(item._id, true)}
                   isSelected={selected?.includes(item._id)}
                   navigation={navigation}

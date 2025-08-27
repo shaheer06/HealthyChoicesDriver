@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "978751294794",
+    "project_id": "healthchoicesdriver",
+    "storage_bucket": "healthchoicesdriver.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978751294794:android:b58a59147f206b36ba85b3",
+        "android_client_info": {
+          "package_name": "com.healthychoicesdriver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCrwPzrkLuuzClPoEsX9EB42fhrnaHTbU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

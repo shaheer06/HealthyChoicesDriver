@@ -1,32 +1,30 @@
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
-  FlatList,
   Image,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Colors from '../assets/colors/Color';
+import { profileArray } from '../assets/dummyData/dummyData';
+import { fonts } from '../assets/fonts/Fonts';
+import Icon from '../assets/icon/Icon';
 import AppSkeleton from '../components/AppSkeleton';
 import Header from '../components/BacKHeader';
-import Icon from '../assets/icon/Icon';
-import { moderateScale, scale, verticalScale } from '../utils/helper';
-import Colors from '../assets/colors/Color';
-import { fonts } from '../assets/fonts/Fonts';
-import ImagePickerModal from '../components/ImagePickerModal';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { profileArray } from '../assets/dummyData/dummyData';
 import CustomButton from '../components/CustomButton';
-import { logoutUser, setUserData } from '../store/slices/userSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { BASE_URL } from '../utils/apiUrl';
-import { updateUserProfile } from '../utils/updateUserProfile';
+import ImagePickerModal from '../components/ImagePickerModal';
 import PopUp from '../Popup/PopUp';
-import api from '../utils/apiUrl';
+import { logoutUser, setUserData } from '../store/slices/userSlice';
+import { BASE_URL } from '../utils/apiUrl';
+import { moderateScale, scale, verticalScale } from '../utils/helper';
+import { updateUserProfile } from '../utils/updateUserProfile';
 
 const { height, width } = Dimensions.get('window');
 
@@ -58,12 +56,12 @@ const ProfileBox = ({ item, onPress, style }) => {
 
 const Profile = () => {
   const { userData } = useSelector(state => state?.user);
+  console.log(userData,"ppppppp")
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(
     `${BASE_URL}/${userData?.data?.imageUrl}`,
   );
 
-  console.log(selectedImage, 'selectedImage', userData?.data);
   const [showEditIcon, setShowEditIcon] = useState(false);
   const navigation = useNavigation();
   const dispatch = useDispatch();

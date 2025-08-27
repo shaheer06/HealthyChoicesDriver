@@ -59,8 +59,6 @@ const Home = () => {
     },
   })
 
-
-  console.log(orderData, 'OrderData');
   useFocusEffect(
     useCallback(() => {
       if (userData?.data?._id) {
