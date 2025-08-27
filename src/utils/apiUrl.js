@@ -2,8 +2,8 @@ import axios from 'axios';
 import PopUp from '../Popup/PopUp';
 
 
-// export const BASE_URL = 'https://healthychoices-server.onrender.com';
-export const BASE_URL = 'http://192.168.100.95:3000';
+export const BASE_URL = 'https://healthychoices-server.onrender.com';
+// export const BASE_URL = 'http://192.168.100.95:3000';
 
 // Placeholder for future token retrieval
 const getAccessToken = async () => {

@@ -9,15 +9,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import AppSkeleton from '../components/AppSkeleton';
 import { moderateScale, scale, verticalScale } from '../utils/helper';
 import Colors from '../assets/colors/Color';
 import { fonts } from '../assets/fonts/Fonts';
 import { orderCard } from '../assets/dummyData/dummyData';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import Icon from '../assets/icon/Icon';
 import CustomButton from '../components/CustomButton';
+import { getOrderList } from '../services/order';
+import { useQuery } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
+import PopUp from '../Popup/PopUp';
 
 const { width, height } = Dimensions.get('window');
 
@@ -72,8 +76,9 @@ const Order = () => {
   const [check2, setCheck2] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-  const { order } = route?.params;
-  console.log(order, 'Order');
+  const { userData } = useSelector(state => state?.user);
+  // const { order } = route?.params;
+  // console.log(order, 'Order');
 
   const handleCheck = () => {
     setCheck(prev => {
@@ -103,6 +108,32 @@ const Order = () => {
     // Return unique names or default values
     return shifts.size > 0 ? Array.from(shifts) : ['Morning', 'Evening'];
   };
+
+
+  const { data: order, isLoading: isLoadingOrderList, refetch } = useQuery({
+    queryKey: ['orderList', userData?.data?._id],
+    queryFn: () => getOrderList(userData?.data?._id),
+    enabled: !!userData?.data?._id,
+    staleTime: 2 * 60 * 1000,
+    cacheTime: 5 * 60 * 1000,
+    onSuccess: (data) => {
+      console.log(data, 'Dataaaaaa');
+    },
+    onError: (error) => {
+      console.log(error, 'Error');
+      PopUp.show('Error', 'error', 3000, 'There is an Error');
+    },
+  })
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userData?.data?._id) {
+        refetch();
+      }
+    }, [refetch]),
+  );
+
+  console.log(order, 'Order Data');
   
 
   const driverShifts = getDriverShifts();

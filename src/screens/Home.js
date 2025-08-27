@@ -133,9 +133,9 @@ const Home = () => {
               onPress={() =>
                 navigation.navigate('BottomTabs', {
                   screen: 'Order',
-                  params: {
-                    order: orderData,
-                  },
+                  // params: {
+                  //   order: orderData,
+                  // },
                 })
               }
             />

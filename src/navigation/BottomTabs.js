@@ -64,14 +64,14 @@ const BottomTabs = () => {
                   {...iconProps}
                 />
               );
-               case 'OneTime':
-              return (
-                <Icon
-                  family="MaterialIcons"
-                  name={focused ? 'all-inbox' : 'inbox'}
-                  {...iconProps}
-                />
-              );
+              //  case 'OneTime':
+              // return (
+              //   <Icon
+              //     family="MaterialIcons"
+              //     name={focused ? 'all-inbox' : 'inbox'}
+              //     {...iconProps}
+              //   />
+              // );
             // case 'Profile':
             //   return (
             //     <Icon
@@ -96,7 +96,7 @@ const BottomTabs = () => {
       })}>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Order" component={Order} />
-      <Tab.Screen name="OneTime" component={OneTime} />
+      {/* <Tab.Screen name="OneTime" component={OneTime} /> */}
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
