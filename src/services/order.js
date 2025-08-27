@@ -27,6 +27,17 @@ export const updateOrderStatus = async (orderId, status) => {
   }
 };
 
+export const getOrderHistory = async driverId => {
+  try {
+    console.log(`/api/storefront/driver-orders/history/${driverId}`, 'Driver ID');
+    const response = await api.get(`/api/storefront/driver-orders/history/${driverId}`);
+    return response?.data;
+  } catch (error) {
+    console.error('Error fetching order history:', error?.response?.data);
+    throw error; // Important for handling error in caller
+  }
+};
+
 export const activityLog = async driverId => {
   try {
     const response = await api.get(`/api/storefront/driver/activities/${driverId}`);
